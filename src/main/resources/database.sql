@@ -11,5 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+    phone varchar(100) NOT NULL ,
     createdAt TIMESTAMP NOT NULL
     );

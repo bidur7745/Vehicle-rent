@@ -14,7 +14,40 @@ public class Vehicle {
     private String imageUrl;
     private String createdAt;
 
-    // Constructors, Getters & Setters
+    // Constructors,
+
+    public Vehicle() {
+    }
+
+    public Vehicle(String name, String type, double rentPerDay, String availabilityStatus, String fuelType, int noOfAirbags, int seatingCapacity, String vehicleType, String color, String imageUrl, String createdAt) {
+        this.name = name;
+        this.type = type;
+        this.rentPerDay = rentPerDay;
+        this.availabilityStatus = availabilityStatus;
+        this.fuelType = fuelType;
+        this.noOfAirbags = noOfAirbags;
+        this.seatingCapacity = seatingCapacity;
+        this.vehicleType = vehicleType;
+        this.color = color;
+        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
+    }
+
+    public Vehicle(int vehicleId, String name, String type, double rentPerDay, String availabilityStatus, String fuelType, int noOfAirbags, int seatingCapacity, String vehicleType, String color, String imageUrl, String createdAt) {
+        this.vehicleId = vehicleId;
+        this.name = name;
+        this.type = type;
+        this.rentPerDay = rentPerDay;
+        this.availabilityStatus = availabilityStatus;
+        this.fuelType = fuelType;
+        this.noOfAirbags = noOfAirbags;
+        this.seatingCapacity = seatingCapacity;
+        this.vehicleType = vehicleType;
+        this.color = color;
+        this.imageUrl = imageUrl;
+        this.createdAt = createdAt;
+    }
+    // Getters & Setters
 
 
     public int getVehicleId() {

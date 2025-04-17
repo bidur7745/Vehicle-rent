@@ -184,7 +184,7 @@
                     <p>Join AutoRent and start your journey</p>
                 </div>
 
-                <form id="registerForm" action="process-register" method="post">
+                <form id="registerForm" action="RegisterServlet" method="post">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name</label>

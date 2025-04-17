@@ -13,6 +13,30 @@ public class User {
     // Constructors, Getters & Setters
 
 
+    public User() {
+    }
+
+    public User(String firstName, String lastName, String email, String password, String phone, String role, String createdAt) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+        this.createdAt = createdAt;
+    }
+
+    public User(int userId, String firstName, String lastName, String email, String password, String phone, String role, String createdAt) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+        this.createdAt = createdAt;
+    }
+
     public int getUserId() {
         return userId;
     }

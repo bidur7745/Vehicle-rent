@@ -345,7 +345,7 @@
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.jsp">
                         <i class="fas fa-car-side"></i> AutoRent
                     </a>
                 </div>
@@ -378,7 +378,7 @@
         <section class="container">
             <div class="booking-container">
                 <div class="vehicle-summary">
-                    <img src="./assetes/BMW-X7-model-card.webp" alt="BMW X7">
+                    <img src="./assets/images/BMW-X7-model-card.webp" alt="BMW X7">
                     <h3>BMW X7</h3>
                     <div class="vehicle-features">
                         <div class="feature-item">

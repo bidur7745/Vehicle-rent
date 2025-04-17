@@ -57,7 +57,7 @@
                 <div class="vehicle-cards">
                     <div class="vehicle-card">
                         <div class="vehicle-image">
-                            <img src="./assetes/BMW-X7-model-card.webp" alt="BMW X7">
+                            <img src="./assets/images/BMW-X7-model-card.webp" alt="BMW X7">
                             <span class="vehicle-badge">Popular</span>
                         </div>
                         <div class="vehicle-info">

@@ -83,7 +83,7 @@
                     <!-- Vehicle Card 1 -->
                     <div class="vehicle-card">
                         <div class="vehicle-image">
-                            <img src="./assetes/BMW-X7-model-card.webp" alt="BMW X7">
+                            <img src="./assets/images/BMW-X7-model-card.webp" alt="BMW X7">
                             <span class="vehicle-badge">Available</span>
                         </div>
                         <div class="vehicle-info">

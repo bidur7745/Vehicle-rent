@@ -14,7 +14,41 @@ public class Booking {
     private String status;
     private String createdAt;
 
-    // Constructors, Getters & Setters
+    // Constructors,
+
+    public Booking(int userId, int vehicleId, String startDateTime, String endDateTime, String pickupLocation, String dropLocation, String pickupTime, String dropTime, double totalPrice, String status, String createdAt) {
+        this.userId = userId;
+        this.vehicleId = vehicleId;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.pickupLocation = pickupLocation;
+        this.dropLocation = dropLocation;
+        this.pickupTime = pickupTime;
+        this.dropTime = dropTime;
+        this.totalPrice = totalPrice;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public Booking() {
+    }
+
+    public Booking(int bookingId, int userId, int vehicleId, String startDateTime, String endDateTime, String pickupLocation, String dropLocation, String pickupTime, String dropTime, double totalPrice, String status, String createdAt) {
+        this.bookingId = bookingId;
+        this.userId = userId;
+        this.vehicleId = vehicleId;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.pickupLocation = pickupLocation;
+        this.dropLocation = dropLocation;
+        this.pickupTime = pickupTime;
+        this.dropTime = dropTime;
+        this.totalPrice = totalPrice;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    // Getters & Setters
 
 
     public int getBookingId() {

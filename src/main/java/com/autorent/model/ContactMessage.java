@@ -11,6 +11,26 @@ public class ContactMessage {
     // Constructors, Getters & Setters
 
 
+    public ContactMessage() {
+    }
+
+    public ContactMessage(int messageId, int userId, String name, String email, String messageBody, String subject) {
+        this.messageId = messageId;
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.messageBody = messageBody;
+        this.subject = subject;
+    }
+
+    public ContactMessage(int userId, String name, String email, String messageBody, String subject) {
+        this.userId = userId;
+        this.name = name;
+        this.email = email;
+        this.messageBody = messageBody;
+        this.subject = subject;
+    }
+
     public int getMessageId() {
         return messageId;
     }

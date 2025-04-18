@@ -145,3 +145,9 @@ CREATE TABLE contact_messages (
 ## 📊 Entity Relationship Diagram (ERD)
 
 ![ERD Diagram](src/main/webapp/assets/images/erd.png)
+
+## ✔️✔️ Live Frontend Preview ✔️✔️
+
+This is a static preview. Backend functionalities like booking, login, and database interactions won't work here. 
+
+[👉 Click here to view the live frontend](https://bidur7745.github.io/-AutoRent-Vehicle-Renting-System/)

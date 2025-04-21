@@ -15,9 +15,8 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('./assetes/BMW-X7-model-card.webp');
             background-size: cover;
-            background-position: center;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)) url('./assetes/BMW-X7-model-card.webp') center;
         }
 
         .auth-card {
@@ -153,7 +152,7 @@
                     <p>Sign in to continue to AutoRent</p>
                 </div>
 
-                <form id="loginForm" action="process-login" method="post">
+                <form id="loginForm" action="${pageContext.request.contextPath}/LoginServlet" method="POST">
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" class="form-control" required>

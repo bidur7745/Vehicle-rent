@@ -19,8 +19,9 @@ public class UserDao {
             ps.setString(2, user.getLastName());
             ps.setString(3, user.getEmail()); // In production, this should be hashed
             ps.setString(4, user.getPassword());
-            ps.setString(5, user.getPhone());
-            ps.setString(6,user.getCreatedAt());
+            ps.setString(5,String.valueOf(user.getRole()));
+            ps.setString(6, user.getPhone());
+            ps.setString(7,user.getCreatedAt());
 
             // Execute the insert statement
             int rows = ps.executeUpdate();
@@ -41,5 +42,7 @@ public class UserDao {
 
         return -1;
     }
+
+
 
 }

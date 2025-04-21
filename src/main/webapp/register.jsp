@@ -15,7 +15,7 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('./assetes/BMW-X7-model-card.webp');
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('./assets/BMW-X7-model-card.webp');
             background-size: cover;
             background-position: center;
         }
@@ -184,7 +184,7 @@
                     <p>Join AutoRent and start your journey</p>
                 </div>
 
-                <form id="registerForm" action="RegisterServlet" method="post">
+                <form id="registerForm" action="RegisterServlet" method="POST">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
@@ -215,6 +215,13 @@
                             <label for="confirmPassword">Confirm Password</label>
                             <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
                         </div>
+                        <div class="form-group">
+                            <label for="role">Role:</label>
+                            <select id="role" name="role" required><option value="user">Customer</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+
+                        </divclas>
                     </div>
 
                     <div class="terms">

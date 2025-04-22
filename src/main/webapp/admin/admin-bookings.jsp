@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - AutoRent</title>
+    <title>Booking Management - AutoRent</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -270,144 +270,118 @@
             box-shadow: 0 0 0 2px #fff;
         }
         
-        /* Dashboard Content */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .stat-card {
-            background: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            padding: 25px;
-            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+        /* Page Header */
+        .page-header {
             display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #fff;
-        }
-        
-        .stat-icon.vehicles {
-            background: linear-gradient(45deg, #4361ee, #4895ef);
-        }
-        
-        .stat-icon.users {
-            background: linear-gradient(45deg, #4cc9f0, #4895ef);
-        }
-        
-        .stat-icon.bookings {
-            background: linear-gradient(45deg, #7209b7, #4361ee);
-        }
-        
-        .stat-icon.revenue {
-            background: linear-gradient(45deg, #f72585, #b5179e);
-        }
-        
-        .stat-info {
-            flex: 1;
-        }
-        
-        .stat-info h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-info span {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        
-        /* Content Sections */
-        .content-section {
-            background: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 25px;
-        }
-        
-        .section-header {
-            padding: 20px 25px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-        
-        .section-header h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 25px;
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
         }
         
-        .section-header h2 i {
-            color: var(--primary-color);
+        .page-title h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
         }
         
-        .section-body {
-            padding: 25px;
+        /* Filter Section */
+        .filter-section {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 20px;
+            margin-bottom: 25px;
         }
         
-        /* Tables */
-        .data-table {
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+        
+        .filter-input {
+            padding: 10px 15px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        /* Bookings Table */
+        .bookings-table-container {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .bookings-table {
             width: 100%;
             border-collapse: collapse;
         }
         
-        .data-table th, 
-        .data-table td {
-            padding: 15px;
+        .bookings-table th,
+        .bookings-table td {
+            padding: 15px 20px;
             text-align: left;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         
-        .data-table th {
+        .bookings-table th {
+            background: #f8f9fa;
             font-weight: 600;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            white-space: nowrap;
         }
         
-        .data-table tbody tr {
+        .bookings-table tbody tr {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             transition: background var(--transition-speed) ease;
         }
         
-        .data-table tbody tr:hover {
-            background: rgba(0,0,0,0.02);
+        .bookings-table tbody tr:hover {
+            background: rgba(0,0,0,0.01);
         }
         
-        .data-table td {
-            vertical-align: middle;
+        .bookings-table tbody tr:last-child {
+            border-bottom: none;
         }
         
         /* Status Pills */
         .status-pill {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 600;
+            text-align: center;
+            min-width: 100px;
         }
         
         .status-active {
@@ -430,8 +404,42 @@
             color: var(--danger-color);
         }
         
+        /* User Info */
+        .user-info-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
         /* Action Buttons */
-        .row-actions {
+        .action-buttons {
             display: flex;
             gap: 8px;
         }
@@ -465,7 +473,39 @@
             background: var(--danger-color);
         }
         
-        /* Add Button */
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 35px;
+            gap: 5px;
+        }
+        
+        .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            background: #fff;
+            color: var(--dark-color);
+            font-weight: 600;
+            transition: all var(--transition-speed) ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .page-link:hover {
+            background: var(--primary-light);
+            color: #fff;
+        }
+        
+        .page-link.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        
+        /* Add New Button */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -506,22 +546,23 @@
             .toggle-sidebar {
                 display: block;
             }
+            
+            .bookings-table {
+                width: 100%;
+                display: block;
+                overflow-x: auto;
+            }
         }
         
         @media (max-width: 768px) {
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .section-header {
+            .page-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 15px;
             }
             
-            .data-table {
-                overflow-x: auto;
-                display: block;
+            .filter-row {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -551,7 +592,7 @@
                 <div class="menu-section">
                     <h5 class="menu-section-title">Main</h5>
                     <ul class="menu-items">
-                        <li class="menu-item active">
+                        <li class="menu-item">
                             <a href="admin-dashboard.jsp">
                                 <i class="fas fa-gauge-high"></i>
                                 <span>Dashboard</span>
@@ -563,7 +604,7 @@
                                 <span>Vehicles</span>
                             </a>
                         </li>
-                        <li class="menu-item">
+                        <li class="menu-item active">
                             <a href="admin-bookings.jsp">
                                 <i class="fas fa-calendar-check"></i>
                                 <span>Bookings</span>
@@ -578,10 +619,8 @@
                     </ul>
                 </div>
                 
-
-                
                 <div class="menu-section">
-
+                    <ul class="menu-items">
                         <li class="menu-item">
                             <a href="login.jsp">
                                 <i class="fas fa-power-off"></i>
@@ -602,7 +641,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="topbar-title">
-                        <h1>Dashboard</h1>
+                        <h1>Booking Management</h1>
                     </div>
                 </div>
                 
@@ -621,228 +660,185 @@
                 </div>
             </div>
             
-            <!-- Dashboard Cards -->
-            <div class="dashboard-cards">
-                <div class="stat-card">
-                    <div class="stat-icon vehicles">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>12</h3>
-                        <span>Total Vehicles</span>
-                    </div>
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h2>Booking Management</h2>
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon users">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>48</h3>
-                        <span>Total Users</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon bookings">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>28</h3>
-                        <span>Active Bookings</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-icon revenue">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Rs 56,750</h3>
-                        <span>Monthly Revenue</span>
-                    </div>
-                </div>
+
+            </div>
+ 
+            <!-- Bookings Table -->
+            <div class="bookings-table-container">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>User</th>
+                            <th>Vehicle</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#BK1001</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">BS</div>
+                                    <div class="user-details">
+                                        <span class="user-name">Bidur Siwakoti</span>
+                                        <span class="user-email">bidur@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>BMW X7</td>
+                            <td>Mar 15, 2025</td>
+                            <td>Mar 20, 2025</td>
+                            <td>Rs 20,000</td>
+                            <td><span class="status-pill status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#BK1002</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">AP</div>
+                                    <div class="user-details">
+                                        <span class="user-name">Anmol Poudel</span>
+                                        <span class="user-email">anmol@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Toyota Camry</td>
+                            <td>Mar 12, 2025</td>
+                            <td>Mar 14, 2025</td>
+                            <td>Rs 12,000</td>
+                            <td><span class="status-pill status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#BK1003</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">DB</div>
+                                    <div class="user-details">
+                                        <span class="user-name">David Basnet</span>
+                                        <span class="user-email">david@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Honda Civic</td>
+                            <td>Mar 18, 2025</td>
+                            <td>Mar 19, 2025</td>
+                            <td>Rs 5,500</td>
+                            <td><span class="status-pill status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#BK1004</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">RS</div>
+                                    <div class="user-details">
+                                        <span class="user-name">Ram Sharma</span>
+                                        <span class="user-email">ram@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tata Nexon</td>
+                            <td>Mar 10, 2025</td>
+                            <td>Mar 13, 2025</td>
+                            <td>Rs 9,000</td>
+                            <td><span class="status-pill status-cancelled">Cancelled</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#BK1005</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">SK</div>
+                                    <div class="user-details">
+                                        <span class="user-name">Sita Kumari</span>
+                                        <span class="user-email">sita@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Honda Civic</td>
+                            <td>Mar 22, 2025</td>
+                            <td>Mar 24, 2025</td>
+                            <td>Rs 11,000</td>
+                            <td><span class="status-pill status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>#BK1006</td>
+                            <td>
+                                <div class="user-info-cell">
+                                    <div class="user-avatar-small">KM</div>
+                                    <div class="user-details">
+                                        <span class="user-name">Krishna Maharjan</span>
+                                        <span class="user-email">krishna@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>BMW X7</td>
+                            <td>Mar 25, 2025</td>
+                            <td>Mar 30, 2025</td>
+                            <td>Rs 20,000</td>
+                            <td><span class="status-pill status-active">Active</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
-            <!-- Recent Bookings Section -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-calendar-check"></i> Recent Bookings</h2>
-
-                </div>
-                
-                <div class="section-body">
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>User</th>
-                                    <th>Vehicle</th>
-                                    <th>From</th>
-                                    <th>To</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#BK1001</td>
-                                    <td>Bidur Siwakoti</td>
-                                    <td>BMW X7</td>
-                                    <td>Mar 15, 2025</td>
-                                    <td>Mar 20, 2025</td>
-                                    <td>Rs 20,000</td>
-                                    <td><span class="status-pill status-active">Active</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#BK1002</td>
-                                    <td>Anmoyl Poudel</td>
-                                    <td>Toyota Camry</td>
-                                    <td>Mar 12, 2025</td>
-                                    <td>Mar 14, 2025</td>
-                                    <td>Rs 12,000</td>
-                                    <td><span class="status-pill status-completed">Completed</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#BK1003</td>
-                                    <td>David Basnet</td>
-                                    <td>Honda Civic</td>
-                                    <td>Mar 18, 2025</td>
-                                    <td>Mar 19, 2025</td>
-                                    <td>Rs 5,500</td>
-                                    <td><span class="status-pill status-pending">Pending</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#BK1004</td>
-                                    <td>Ram Sharma</td>
-                                    <td>Tata Nexon</td>
-                                    <td>Mar 10, 2025</td>
-                                    <td>Mar 13, 2025</td>
-                                    <td>Rs 9,000</td>
-                                    <td><span class="status-pill status-cancelled">Cancelled</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Available Vehicles Section -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-car"></i> Available Vehicles</h2>
-
-                </div>
-                
-                <div class="section-body">
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Vehicle</th>
-                                    <th>Category</th>
-                                    <th>License Plate</th>
-                                    <th>Daily Rate</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>#V001</td>
-                                    <td>BMW X7</td>
-                                    <td>SUV</td>
-                                    <td>BA-123-PA</td>
-                                    <td>Rs 4,000</td>
-                                    <td><span class="status-pill status-active">Available</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#V002</td>
-                                    <td>Toyota Camry</td>
-                                    <td>Sedan</td>
-                                    <td>BA-456-PA</td>
-                                    <td>Rs 6,000</td>
-                                    <td><span class="status-pill status-active">Available</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#V003</td>
-                                    <td>Honda Civic</td>
-                                    <td>Sedan</td>
-                                    <td>BA-789-PA</td>
-                                    <td>Rs 5,500</td>
-                                    <td><span class="status-pill status-pending">Booked</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#V004</td>
-                                    <td>Tata Nexon</td>
-                                    <td>SUV</td>
-                                    <td>BA-012-PA</td>
-                                    <td>Rs 3,000</td>
-                                    <td><span class="status-pill status-cancelled">Maintenance</span></td>
-                                    <td>
-                                        <div class="row-actions">
-                                            <button class="action-btn btn-view"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn btn-edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn btn-delete"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Pagination -->
+            <div class="pagination">
+                <a href="#" class="page-link"><i class="fas fa-chevron-left"></i></a>
+                <a href="#" class="page-link active">1</a>
+                <a href="#" class="page-link">2</a>
+                <a href="#" class="page-link">3</a>
+                <a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a>
             </div>
         </div>
     </div>

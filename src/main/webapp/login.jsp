@@ -16,7 +16,7 @@
             justify-content: center;
             padding: 2rem;
             background-size: cover;
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)) url('./assetes/BMW-X7-model-card.webp') center;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('assets/images/BMW-X7-model-card.webp') center;
         }
 
         .auth-card {

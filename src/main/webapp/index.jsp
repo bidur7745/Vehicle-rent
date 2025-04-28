@@ -5,15 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoRent - Vehicle Rental Service</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- <link rel="stylesheet" href="assets/css/style.css"> -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
     <header class="sticky-header">
         <div class="container">
             <nav>
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.jsp">
                         <i class="fas fa-car-side"></i> AutoRent
                     </a>
                 </div>
@@ -45,7 +47,7 @@
                         <a href="vehicles.jsp" class="btn btn-primary"><i class="fas fa-car"></i> Browse Vehicles</a>
                     </div>
                     <div class="hero-image">
-                        <img src="./assetes/BMW-X7-model-card.webp" alt="Luxury Car">
+                        <img src="./assets/images/BMW-X7-model-card.webp" alt="Luxury Car">
                     </div>
                 </div>
             </div>
@@ -74,7 +76,7 @@
                     </div>
                     <div class="vehicle-card">
                         <div class="vehicle-image">
-                            <img src="./assetes/toyota.jpg" alt="Toyota Camry">
+                            <img src="./assets/images/toyota.jpg" alt="Toyota Camry">
                             <span class="vehicle-badge">Best Value</span>
                         </div>
                         <div class="vehicle-info">
@@ -244,226 +246,24 @@
         </div>
     </footer>
 
-    <style>
-        .site-footer {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            padding: 60px 0 20px;
-            margin-top: 60px;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-brand h3 {
-            color: #1877F2;
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .footer-brand p {
-            color: #b3b3b3;
-            margin-bottom: 20px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: #2a2a2a;
-            border-radius: 50%;
-            color: #ffffff;
-            transition: all 0.3s ease;
-        }
-
-        .social-link:hover {
-            background: #1877F2;
-            transform: translateY(-3px);
-        }
-
-        .footer-links h4,
-        .footer-contact h4,
-        .footer-newsletter h4 {
-            color: #ffffff;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        .footer-links h4::after,
-        .footer-contact h4::after,
-        .footer-newsletter h4::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 40px;
-            height: 2px;
-            background: #1877F2;
-        }
-
-        .footer-links ul,
-        .footer-contact ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-links li,
-        .footer-contact li {
-            margin-bottom: 12px;
-        }
-
-        .footer-links a,
-        .footer-contact a {
-            color: #b3b3b3;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .footer-links a:hover,
-        .footer-contact a:hover {
-            color: #1877F2;
-            padding-left: 5px;
-        }
-
-        .footer-contact li {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #b3b3b3;
-        }
-
-        .footer-contact i {
-            color: #1877F2;
-        }
-
-        .footer-newsletter p {
-            color: #b3b3b3;
-            margin-bottom: 20px;
-        }
-
-        .newsletter-form {
-            display: flex;
-            gap: 10px;
-        }
-
-        .newsletter-form input {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background: #2a2a2a;
-            color: #ffffff;
-        }
-
-        .btn-subscribe {
-            padding: 10px 20px;
-            background: #1877F2;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-subscribe:hover {
-            background: #1464d8;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid #2a2a2a;
-            padding-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .footer-bottom p {
-            color: #b3b3b3;
-            margin: 0;
-        }
-
-        .footer-bottom span {
-            color: #1877F2;
-        }
-
-        .footer-legal {
-            display: flex;
-            gap: 20px;
-        }
-
-        .footer-legal a {
-            color: #b3b3b3;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-legal a:hover {
-            color: #1877F2;
-        }
-
-        @media (max-width: 768px) {
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .footer-legal {
-                justify-content: center;
-            }
-
-            .newsletter-form {
-                flex-direction: column;
-            }
-        }
-    </style>
-
     <script>
-        const mobileMenuBtn = document.querySelector('.mobile-menu');
-        const navContainer = document.querySelector('.nav-container');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            navContainer.classList.toggle('active');
-            mobileMenuBtn.innerHTML = navContainer.classList.contains('active') 
-                ? '<i class="fas fa-times"></i>' 
-                : '<i class="fas fa-bars"></i>';
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.querySelector('.mobile-menu');
+            const navContainer = document.querySelector('.nav-container');
+            if (mobileMenuBtn && navContainer) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    navContainer.classList.toggle('active');
+                    mobileMenuBtn.innerHTML = navContainer.classList.contains('active') 
+                        ? '<i class="fas fa-times"></i>' 
+                        : '<i class="fas fa-bars"></i>';
+                });
 
-        document.addEventListener('click', (e) => {
-            if (!navContainer.contains(e.target) && navContainer.classList.contains('active')) {
-                navContainer.classList.remove('active');
-                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                document.addEventListener('click', (e) => {
+                    if (!navContainer.contains(e.target) && navContainer.classList.contains('active')) {
+                        navContainer.classList.remove('active');
+                        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
             }
         });
     </script>

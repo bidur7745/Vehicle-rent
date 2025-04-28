@@ -23,12 +23,16 @@ public class AuthFilter implements Filter {
 
         String uri = req.getRequestURI();
 
-        if(uri.endsWith("/login.jsp") || uri.endsWith("/register.jsp") || uri.endsWith("/") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegisterServlet")) {
+        if(uri.endsWith("/login.jsp") || uri.endsWith("/register.jsp") || uri.endsWith("/") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegisterServlet") )  {
             filterChain.doFilter(servletRequest,servletResponse);
             return;
         }
 
-
+        // Allow unauthenticated access to static resources
+        if (uri.contains("/assets/") || uri.contains("/css/") || uri.contains("/js/") || uri.contains("/images/") || uri.endsWith(".css") || uri.endsWith(".js") || uri.endsWith(".png") || uri.endsWith(".jpg") || uri.endsWith(".jpeg") || uri.endsWith(".webp")) {
+            filterChain.doFilter(servletRequest,servletResponse);
+            return;
+        }
 
         HttpSession session = req.getSession(false);
 

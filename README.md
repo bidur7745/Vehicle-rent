@@ -82,7 +82,7 @@ cd vehicle_Commerce-
 
 ```sql
 -- Create the database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS autorenting_db;
+CREATE DATABASE IF NOT EXISTS vehicle_commerce;
 
 -- Use the database
 USE autorenting_db;

@@ -25,15 +25,27 @@ public class LoginServlet extends HttpServlet {
        String email = request.getParameter("email");
        String password = request.getParameter("password");
 
-       User user = AuthService.login(email,password);
-        System.out.println("Role:" + user.getRole());
+       User user = AuthService.login(email, password);
+       if (user == null) {
+           request.setAttribute("errorMessage", "Invalid email or password.");
+           request.getRequestDispatcher("login.jsp").forward(request, response);
+           return;
+       }
 
-        HttpSession session = request.getSession();
-        session.setAttribute("user",user);
-        session.setAttribute("role",user.getRole());
+       HttpSession session = request.getSession();
+       session.setAttribute("user", user);
+       session.setAttribute("role", user.getRole());
+       session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
+       // Set success message before redirect
+       session.setAttribute("successMessage", "Welcome back, " + user.getFirstName() + "!");
 
-       response.sendRedirect(request.getContextPath() + "/user/dashboard.jsp");
+       // Redirect to index page for all users except admin
+       if (user.getRole() == User.Role.admin) {
+           response.sendRedirect(request.getContextPath() + "/admin/admin-dashboard");
+       } else {
+           response.sendRedirect(request.getContextPath() + "/index.jsp");
+       }
 
 
 

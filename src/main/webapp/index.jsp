@@ -11,32 +11,7 @@
 
 </head>
 <body>
-    <header class="sticky-header">
-        <div class="container">
-            <nav>
-                <div class="logo">
-                    <a href="index.jsp">
-                        <i class="fas fa-car-side"></i> AutoRent
-                    </a>
-                </div>
-                <div class="nav-container">
-                    <ul class="nav-links">
-                        <li><a href="index.jsp" class="active"><i class="fas fa-home"></i> Home</a></li>
-                        <li><a href="vehicles.jsp"><i class="fas fa-car"></i> Vehicles</a></li>
-                        <li><a href="booking.jsp"><i class="fas fa-calendar-alt"></i> Bookings</a></li>
-                        <li><a href="about.jsp"><i class="fas fa-info-circle"></i> About us</a></li>
-                    </ul>
-                    <div class="auth-buttons">
-                        <a href="login.jsp" class="btn btn-primary">Get Started</a>
-                    </div>
-                    <button class="mobile-menu">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
-            </nav>
-        </div>
-    </header>
-
+    <jsp:include page="components/navbar.jsp" />
     <main>
         <section class="hero-simple">
             <div class="container">
@@ -52,49 +27,9 @@
                 </div>
             </div>
         </section>
-
-        <section class="featured-vehicles">
-            <div class="container">
-                <h2><i class="fas fa-star"></i> Featured Vehicles</h2>
-                <div class="vehicle-cards">
-                    <div class="vehicle-card">
-                        <div class="vehicle-image">
-                            <img src="./assets/images/BMW-X7-model-card.webp" alt="BMW X7">
-                            <span class="vehicle-badge">Popular</span>
-                        </div>
-                        <div class="vehicle-info">
-                            <h3>BMW X7</h3>
-                            <div class="vehicle-features">
-                                <span><i class="fas fa-users"></i> 7 Seats</span>
-                                <span><i class="fas fa-cog"></i> Automatic</span>
-                            </div>
-                            <div class="vehicle-price">
-                                <span class="price">Rs4000/day</span>
-                                <a href="booking.jsp" class="btn btn-primary">Book Now</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="vehicle-card">
-                        <div class="vehicle-image">
-                            <img src="./assets/images/toyota.jpg" alt="Toyota Camry">
-                            <span class="vehicle-badge">Best Value</span>
-                        </div>
-                        <div class="vehicle-info">
-                            <h3>Toyota Camry</h3>
-                            <div class="vehicle-features">
-                                <span><i class="fas fa-users"></i> 5 Seats</span>
-                                <span><i class="fas fa-cog"></i> Automatic</span>
-                            </div>
-                            <div class="vehicle-price">
-                                <span class="price">Rs5000/day</span>
-                                <a href="booking.jsp" class="btn btn-primary">Book Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+        
+<jsp:include page="components/featured-vechicles.jsp" />
+      
         <section class="services">
             <div class="container">
                 <h2><i class="fas fa-check-circle"></i> Our Services</h2>
@@ -185,66 +120,10 @@
             </div>
         </section>
 
-        <!-- <section class="cta-section">
-            <div class="container">
-                <div class="cta-content">
-                    <h2>Ready to Start Your Journey?</h2>
-                    <p>Join thousands of satisfied customers who trust AutoRent for their travel needs.</p>
-                    <a href="vehicles.jsp" class="btn btn-primary"><i class="fas fa-car"></i> Rent a Car Now</a>
-                </div>
-            </div>
-        </section> -->
+
     </main>
 
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h3><i class="fas fa-car-side"></i> AutoRent</h3>
-                    <p>Drive the car you want, when you want.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.jsp"><i class="fas fa-chevron-right"></i> Home</a></li>
-                        <li><a href="vehicles.jsp"><i class="fas fa-chevron-right"></i> Vehicles</a></li>
-                        <li><a href="booking.jsp"><i class="fas fa-chevron-right"></i> Bookings</a></li>
-                        <li><a href="about.jsp"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact Us</h4>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> <a href="mailto:support@autorent.com">support@autorent.com</a></li>
-                        <li><i class="fas fa-phone"></i> +977-9800000000</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Dulari Chowk, Morang, Nepal</li>
-                    </ul>
-                </div>
-                <div class="footer-newsletter">
-                    <h4>Newsletter</h4>
-                    <p>Subscribe to our newsletter for updates and offers</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Enter your email" required>
-                        <button type="submit" class="btn-subscribe">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 <span>AutoRent</span>. All rights reserved.</p>
-                <div class="footer-legal">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <jsp:include page="components/footer.jsp" />
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

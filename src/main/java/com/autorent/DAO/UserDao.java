@@ -2,6 +2,7 @@ package com.autorent.DAO;
 
 import com.autorent.model.User;
 import com.autorent.utils.DbConnection;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +16,8 @@ public class UserDao {
     public static final String SELECT_USER_BY_EMAIL_PASSWORD = "SELECT * FROM users WHERE email = ? AND password = ?";
     public static final String SELECT_USER_BY_EMAIL = "SELECT * FROM users WHERE email = ?";
     public static final String SELECT_USER_BY_ID = "SELECT * FROM users WHERE id = ?";
+    public static final String SELECT_USER_BY_NAME = "SELECT * FROM users WHERE first_name = ? AND last_name = ?";
+    public static final String SELECT_USER_BY_PHONE = "SELECT * FROM users WHERE phone = ?";
 
 
     public static int registerUser(User user) {
@@ -23,8 +26,9 @@ public class UserDao {
             // Set parameters for the prepared statement
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
-            ps.setString(3, user.getEmail()); // In production, this should be hashed
-            ps.setString(4, user.getPassword());
+            ps.setString(3, user.getEmail());
+            // Hash the password before storing
+            ps.setString(4, BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
             ps.setString(5, String.valueOf(user.getRole()));
             ps.setString(6, user.getPhone());
             ps.setString(7, user.getCreatedAt());
@@ -66,35 +70,63 @@ public class UserDao {
 
     public static User loginUser(User user) {
         try (Connection connection = DbConnection.getConnection();
-             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_EMAIL_PASSWORD);) {
-            // Set parameters for the prepared statement
+             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_EMAIL)) {
             ps.setString(1, user.getEmail());
-            ps.setString(2, user.getPassword()); // In production, use password hashing
-
-            // Execute the query
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                User newuser = new User();
-                newuser.setUserId(rs.getInt("userid"));
-                newuser.setFirstName(rs.getString("first_name"));
-                newuser.setLastName(rs.getString("last_name"));
-                newuser.setEmail(rs.getString("email"));
-                newuser.setPassword(rs.getString("password"));
-                newuser.setPhone(rs.getString("phone"));
-                newuser.setRole(User.Role.valueOf(rs.getString("role")));
-                return newuser;
-
-
+            if (rs.next()) {
+                String hashed = rs.getString("password");
+                // Check hashed password
+                if (org.mindrot.jbcrypt.BCrypt.checkpw(user.getPassword(), hashed)) {
+                    User newuser = new User();
+                    newuser.setUserId(rs.getInt("userid"));
+                    newuser.setFirstName(rs.getString("first_name"));
+                    newuser.setLastName(rs.getString("last_name"));
+                    newuser.setEmail(rs.getString("email"));
+                    newuser.setPassword(rs.getString("password"));
+                    newuser.setPhone(rs.getString("phone"));
+                    newuser.setRole(User.Role.valueOf(rs.getString("role")));
+                    return newuser;
+                }
             }
-
-        }
-        catch (SQLException e) {
-            // Log the exception details for debugging
+        } catch (SQLException e) {
             System.err.println("Error authenticating user: " + e.getMessage());
             throw new RuntimeException(e);
         }
-
         return null;
+    }
+
+    public static boolean emailExists(String email) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_EMAIL)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean phoneExists(String phone) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_PHONE)) {
+            ps.setString(1, phone);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean nameExists(String firstName, String lastName) {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_NAME)) {
+            ps.setString(1, firstName);
+            ps.setString(2, lastName);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

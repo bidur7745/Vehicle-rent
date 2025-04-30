@@ -1,14 +1,31 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    // Allow access to this page regardless of login status
+    boolean isLoggedIn = session != null && session.getAttribute("user") != null;
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - AutoRent</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        .contact-container {
+        .contact-section {
+            padding: 80px 0;
+            margin-top: 60px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
@@ -16,31 +33,96 @@
         }
         
         @media (max-width: 768px) {
-            .contact-container {
+            .contact-grid {
                 grid-template-columns: 1fr;
             }
         }
         
         .contact-info {
             background: white;
-            padding: 1.5rem;
+            padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-        .contact-info h3 {
+
+        .info-card {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .info-card i {
+            font-size: 2rem;
+            color: #1877F2;
             margin-bottom: 1rem;
         }
         
-        .contact-info p {
-            margin-bottom: 0.5rem;
+        .info-card h3 {
+            margin: 1rem 0;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        .info-card p {
+            color: #666;
+            line-height: 1.6;
         }
         
         .contact-form {
             background: white;
-            padding: 1.5rem;
+            padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .contact-form h3 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #1877F2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1664d9;
         }
         
         .success-message {
@@ -51,124 +133,100 @@
             border-radius: 4px;
             margin-bottom: 1rem;
         }
+
+        .map-section {
+            padding: 40px 0;
+            background-color: #fff;
+        }
+
+        .map-container {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
-    <header>
+    <jsp:include page="/components/navbar.jsp" />
+
+    <section class="contact-section">
         <div class="container">
-            <nav>
-                <div class="logo">
-                    <h1>AutoRent</h1>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="index.jsp">Home</a></li>
-                    <li><a href="vehicles.jsp">Vehicles</a></li>
-                    <li><a href="my-bookings.jsp">My Bookings</a></li>
-                    <li><a href="about.jsp">About</a></li>
-                    <li><a href="contact.jsp" class="active">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container">
-        <h2>Contact Us</h2>
-        
-        <div class="success-message" id="successMessage">
-            Thank you for your message! We'll get back to you soon.
-        </div>
-        
-        <div class="contact-container">
-            <div class="contact-info">
-                <h3>Get in Touch</h3>
-                <p><strong>Address:</strong> 123 Auto Street, City, Country</p>
-                <p><strong>Phone:</strong> +1 (123) 456-7890</p>
-                <p><strong>Email:</strong> info@autorent.com</p>
-                <p><strong>Business Hours:</strong></p>
-                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                <p>Saturday: 10:00 AM - 4:00 PM</p>
-                <p>Sunday: Closed</p>
-            </div>
-
-            <div class="contact-form">
-                <form id="contactForm" onsubmit="return handleSubmit(event)">
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" class="form-control" required>
+            <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="info-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Our Location</h3>
+                        <p>Dulari Chowk<br>Morang, Nepal</p>
                     </div>
-
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
+                    <div class="info-card">
+                        <i class="fas fa-phone"></i>
+                        <h3>Phone Numbers</h3>
+                        <p>Main: +977-9800000000<br>Support: +977-9811111111</p>
                     </div>
-
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" class="form-control" required>
+                    <div class="info-card">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email</h3>
+                        <p>info@autorent.com<br>support@autorent.com</p>
                     </div>
-
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
-                    </div>
-
-                    <div class="form-group mt-2">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h3><i class="fas fa-car-side"></i> AutoRent</h3>
-                    <p>Drive the car you want, when you want.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <div class="info-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Business Hours</h3>
+                        <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM</p>
                     </div>
                 </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.jsp"><i class="fas fa-chevron-right"></i> Home</a></li>
-                        <li><a href="vehicles.jsp"><i class="fas fa-chevron-right"></i> Vehicles</a></li>
-                        <li><a href="booking.jsp"><i class="fas fa-chevron-right"></i> Bookings</a></li>
-                        <li><a href="about.jsp"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact Us</h4>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> <a href="mailto:support@autorent.com">support@autorent.com</a></li>
-                        <li><i class="fas fa-phone"></i> +977-9800000000</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Dulari Chowk, Morang, Nepal</li>
-                    </ul>
-                </div>
-                <div class="footer-newsletter">
-                    <h4>Newsletter</h4>
-                    <p>Subscribe to our newsletter for updates and offers</p>
-                    <form class="newsletter-form">
-                        <input type="email" placeholder="Enter your email" required>
-                        <button type="submit" class="btn-subscribe">Subscribe</button>
+                <div class="contact-form">
+                    <h3>Send us a Message</h3>
+                    <div id="successMessage" class="success-message">
+                        Your message has been sent successfully! We'll get back to you soon.
+                    </div>
+                    <form id="contactForm" onsubmit="return handleSubmit(event)">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
                     </form>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 <span>AutoRent</span>. All rights reserved.</p>
-                <div class="footer-legal">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Policy</a>
-                </div>
+        </div>
+    </section>
+
+    <section class="map-section">
+        <div class="container">
+            <div class="map-container">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3571.550325669127!2d87.30046697495558!3d26.65621353264462!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ef6ea0c724a88f%3A0x7a6b16babeaffed8!2sDulari%20Chowk!5e0!3m2!1sen!2snp!4v1709728583030!5m2!1sen!2snp"
+                    width="100%" 
+                    height="450" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
             </div>
         </div>
-    </footer>
+    </section>
+
+    <jsp:include page="/components/footer.jsp" />
 
     <script>
         function handleSubmit(event) {
@@ -189,5 +247,4 @@
         }
     </script>
 </body>
-<link rel="stylesheet" href="assets/css/style.css">
 </html>

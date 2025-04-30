@@ -8,9 +8,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @WebFilter("/*")
 public class AuthFilter implements Filter {
+    
+    // List of paths that don't require authentication
+    private static final List<String> PUBLIC_PATHS = Arrays.asList(
+        "/login.jsp",
+        "/register.jsp",
+        "/",
+        "/index.jsp",
+        "/about.jsp",
+        "/vehicles.jsp",
+        "/contact.jsp",
+        "/LoginServlet",
+        "/RegisterServlet",
+        "/logout"
+    );
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
@@ -22,34 +39,71 @@ public class AuthFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
 
         String uri = req.getRequestURI();
+        String contextPath = req.getContextPath();
+        String path = uri.substring(contextPath.length());
 
-        if(uri.endsWith("/login.jsp") || uri.endsWith("/register.jsp") || uri.endsWith("/") || uri.endsWith("/LoginServlet") || uri.endsWith("/RegisterServlet") )  {
-            filterChain.doFilter(servletRequest,servletResponse);
+        // Allow access to public paths
+        if (isPublicPath(path)) {
+            filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        // Allow unauthenticated access to static resources
-        if (uri.contains("/assets/") || uri.contains("/css/") || uri.contains("/js/") || uri.contains("/images/") || uri.endsWith(".css") || uri.endsWith(".js") || uri.endsWith(".png") || uri.endsWith(".jpg") || uri.endsWith(".jpeg") || uri.endsWith(".webp")) {
-            filterChain.doFilter(servletRequest,servletResponse);
+        // Allow access to static resources
+        if (isStaticResource(path)) {
+            filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
         HttpSession session = req.getSession(false);
-
-        if(session==null){
-            resp.sendRedirect(req.getContextPath()+"/login.jsp");
+        
+        // Check if user is not logged in
+        if (session == null || session.getAttribute("user") == null) {
+            // If AJAX request, send 401 status
+            if ("XMLHttpRequest".equals(req.getHeader("X-Requested-With"))) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            
+            // For regular requests, redirect to login
+            resp.sendRedirect(contextPath + "/login.jsp");
+            return;
         }
 
-
-        assert session != null;
+        // User is logged in, check role-based access
         User.Role role = (User.Role) session.getAttribute("role");
-
-        if(role.equals(User.Role.admin)) {
-            resp.sendRedirect(req.getContextPath()+"/admin/admin-dashboard");
+        
+        // Handle null role
+        if (role == null) {
+            session.invalidate();
+            resp.sendRedirect(contextPath + "/login.jsp");
+            return;
         }
 
-        filterChain.doFilter(servletRequest,servletResponse);
+        // Check admin access
+        if (path.startsWith("/admin/") && !role.equals(User.Role.admin)) {
+            resp.sendRedirect(contextPath + "/index.jsp");
+            return;
+        }
 
+        // If all checks pass, continue with the request
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private boolean isPublicPath(String path) {
+        return PUBLIC_PATHS.stream().anyMatch(path::endsWith);
+    }
+
+    private boolean isStaticResource(String path) {
+        return path.contains("/assets/") || 
+               path.contains("/css/") || 
+               path.contains("/js/") || 
+               path.contains("/images/") || 
+               path.endsWith(".css") || 
+               path.endsWith(".js") || 
+               path.endsWith(".png") || 
+               path.endsWith(".jpg") || 
+               path.endsWith(".jpeg") || 
+               path.endsWith(".webp");
     }
 
     @Override

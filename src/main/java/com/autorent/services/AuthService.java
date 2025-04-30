@@ -6,14 +6,53 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 public class AuthService {
+    public static boolean isValidPassword(String password) {
+        // At least 8 chars, 1 uppercase, 1 number, 1 special character
+        String pattern = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=\\S+$).{8,}$";
+        return password != null && password.matches(pattern);
+    }
+
+    public static boolean isValidPhone(String phone) {
+        // Exactly 10 digits
+        return phone != null && phone.matches("^[0-9]{10}$");
+    }
+
+    public static boolean phoneExists(String phone) {
+        return UserDao.phoneExists(phone);
+    }
+
     public static int register(String firstName, String lastName, String email, String password, String phone, String role, String createdAt) {
+        // Check email
+        if (UserDao.emailExists(email)) {
+            return -2; // Email exists
+        }
+
+        // Check if name already exists
+        if (UserDao.nameExists(firstName, lastName)) {
+            return -3; // Name exists
+        }
+
+        // Check phone
+        if (!isValidPhone(phone)) {
+            return -5; // Invalid phone format
+        }
+
+        if (phoneExists(phone)) {
+            return -6; // Phone number already exists
+        }
+
+        // Check password
+        if (!isValidPassword(password)) {
+            return -4; // Invalid password
+        }
+
         User usermodel = new User();
         usermodel.setFirstName(firstName);
         usermodel.setLastName(lastName);
         usermodel.setEmail(email);
         usermodel.setPassword(password);
         usermodel.setPhone(phone);
-        usermodel.setRole(User.Role.valueOf(role));
+        usermodel.setRole(User.Role.user);
         usermodel.setCreatedAt(createdAt);
 
         return UserDao.registerUser(usermodel);

@@ -286,6 +286,9 @@ main {
     margin-top: 0.5rem;
 }
 
+
+
+
 /* About Hero Section */
 .about-hero {
     background-color: #f8f9fa;
@@ -488,59 +491,7 @@ main {
     }
 }
 
-/* Keep the existing form styles for login/register pages */
-.login-form, .register-form {
-    min-height: calc(100vh - 200px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
-}
 
-.login-form .card, .register-form .card {
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-.login-form h2, .register-form h2 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
-}
-
-.user-type-toggle {
-    display: flex;
-    margin-bottom: 1.5rem;
-}
-
-.user-type-toggle .btn {
-    flex: 1;
-    padding: 0.8rem;
-    border: none;
-    background-color: #f5f5f5;
-    color: #666;
-    font-weight: 500;
-    transition: all 0.3s;
-}
-
-.user-type-toggle .btn.btn-primary {
-    background-color: #3498db;
-    color: #fff;
-}
-
-.login-form .text-center a, .register-form .text-center a {
-    color: #3498db;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.login-form .text-center a:hover, .register-form .text-center a:hover {
-    color: #2980b9;
-}
 
 /* Vehicles Hero Section */
 .vehicles-hero {
@@ -973,6 +924,10 @@ textarea.form-control {
         padding: 1.5rem;
     }
 }
+
+
+
+
 
 /* Footer Styles (moved from index.jsp) */
 .site-footer {

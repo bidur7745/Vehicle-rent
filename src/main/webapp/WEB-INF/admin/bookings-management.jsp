@@ -17,6 +17,15 @@
         <%@ include file="components/admin-header.jsp" %>
         
         <main class="p-6">
+            <!-- Page Header -->
+            <div class="mb-8 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Bookings</h2>
+                <a href="${pageContext.request.contextPath}/admin/bookings/create" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    <i class="fas fa-plus mr-2"></i> Create New Booking
+                </a>
+            </div>
+
             <!-- Filters -->
             <div class="bg-white rounded-lg shadow mb-6 p-4">
                 <form action="${pageContext.request.contextPath}/admin/bookings" method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -39,15 +48,9 @@
                             <option value="month" ${param.dateRange == 'month' ? 'selected' : ''}>This Month</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                        <input type="text" id="search" name="search" value="${param.search}"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                               placeholder="Search by booking ID or user...">
-                    </div>
                     <div class="flex items-end">
-                        <button type="submit" class="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700">
-                            Apply Filters
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                            <i class="fas fa-filter mr-2"></i> Filter
                         </button>
                     </div>
                 </form>
@@ -96,66 +99,23 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-3">
-                                        <a href="${pageContext.request.contextPath}/admin/bookings/view?id=${booking.bookingId}" 
-                                           class="text-indigo-600 hover:text-indigo-900">View</a>
-                                        <c:if test="${booking.status == 'PENDING'}">
-                                            <a href="#" onclick="updateStatus(${booking.bookingId}, 'CONFIRMED')"
-                                               class="text-green-600 hover:text-green-900">Confirm</a>
-                                            <a href="#" onclick="updateStatus(${booking.bookingId}, 'CANCELLED')"
-                                               class="text-red-600 hover:text-red-900">Cancel</a>
-                                        </c:if>
-                                        <c:if test="${booking.status == 'CONFIRMED'}">
-                                            <a href="#" onclick="updateStatus(${booking.bookingId}, 'COMPLETED')"
-                                               class="text-blue-600 hover:text-blue-900">Complete</a>
-                                        </c:if>
-                                    </div>
+                                    <a href="${pageContext.request.contextPath}/admin/bookings/view?id=${booking.bookingId}" 
+                                       class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
+                                    <a href="#" onclick="confirmCancel(${booking.bookingId})"
+                                       class="text-red-600 hover:text-red-900">Cancel</a>
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-
-                <!-- Pagination -->
-                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    <div class="flex-1 flex justify-between sm:hidden">
-                        <a href="?page=${currentPage - 1}" 
-                           class="${currentPage == 1 ? 'invisible' : ''} relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            Previous
-                        </a>
-                        <a href="?page=${currentPage + 1}"
-                           class="${currentPage == totalPages ? 'invisible' : ''} relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            Next
-                        </a>
-                    </div>
-                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm text-gray-700">
-                                Showing <span class="font-medium">${(currentPage - 1) * itemsPerPage + 1}</span> to 
-                                <span class="font-medium">${Math.min(currentPage * itemsPerPage, totalItems)}</span> of 
-                                <span class="font-medium">${totalItems}</span> results
-                            </p>
-                        </div>
-                        <div>
-                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                <c:forEach begin="1" end="${totalPages}" var="page">
-                                    <a href="?page=${page}" 
-                                       class="${currentPage == page ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'} relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                        ${page}
-                                    </a>
-                                </c:forEach>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
 
     <script>
-        function updateStatus(bookingId, status) {
-            if (confirm('Are you sure you want to update this booking to ' + status + '?')) {
-                window.location.href = '${pageContext.request.contextPath}/admin/bookings/update-status?id=' + bookingId + '&status=' + status;
+        function confirmCancel(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                window.location.href = '${pageContext.request.contextPath}/admin/bookings/cancel?id=' + bookingId;
             }
         }
     </script>

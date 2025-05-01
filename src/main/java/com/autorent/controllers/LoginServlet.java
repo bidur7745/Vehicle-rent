@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 
        // Redirect to index page for all users except admin
        if (user.getRole() == User.Role.admin) {
-        response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+        response.sendRedirect(request.getContextPath() + "/admin/dashboard");
     } else {
            response.sendRedirect(request.getContextPath() + "/index.jsp");
        }

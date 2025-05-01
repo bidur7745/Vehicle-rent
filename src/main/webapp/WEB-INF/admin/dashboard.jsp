@@ -6,140 +6,332 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - AutoRent</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            font-family: Arial, sans-serif;
+        }
+
+        .content-wrapper {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .icon-wrapper {
+            padding: 0.75rem;
+            border-radius: 9999px;
+            width: fit-content;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card .icon-wrapper.blue {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .stat-card .icon-wrapper.green {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .stat-card .icon-wrapper.purple {
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+
+        .stat-card .icon-wrapper.yellow {
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+
+        .stat-card i {
+            font-size: 1.5rem;
+        }
+
+        .stat-card i.blue {
+            color: #3b82f6;
+        }
+
+        .stat-card i.green {
+            color: #10b981;
+        }
+
+        .stat-card i.purple {
+            color: #8b5cf6;
+        }
+
+        .stat-card i.yellow {
+            color: #f59e0b;
+        }
+
+        .stat-card .label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f9fafb;
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            color: #111827;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-confirmed {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: grid;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-purple {
+            background-color: #8b5cf6;
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background-color: #7c3aed;
+        }
+
+        .view-link {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        .view-link:hover {
+            color: #4338ca;
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <c:set var="pageTitle" value="Dashboard" scope="request"/>
-    <%@ include file="components/admin-sidebar.jsp" %>
-    
-    <div class="ml-64 min-h-screen">
-        <%@ include file="components/admin-header.jsp" %>
-        
-        <main class="p-6">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Total Vehicles -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-blue-500 bg-opacity-10">
-                            <i class="fas fa-car text-blue-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-500 text-sm">Total Vehicles</p>
-                            <h3 class="text-2xl font-bold">${totalVehicles}</h3>
-                        </div>
-                    </div>
-                </div>
+<body>
+<c:set var="pageTitle" value="Dashboard" scope="request"/>
+<%@ include file="components/admin-sidebar.jsp" %>
 
-                <!-- Active Bookings -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-green-500 bg-opacity-10">
-                            <i class="fas fa-calendar-check text-green-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-500 text-sm">Active Bookings</p>
-                            <h3 class="text-2xl font-bold">${activeBookings}</h3>
-                        </div>
-                    </div>
-                </div>
+<div class="content-wrapper">
+    <%@ include file="components/admin-header.jsp" %>
 
-                <!-- Total Users -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-purple-500 bg-opacity-10">
-                            <i class="fas fa-users text-purple-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-500 text-sm">Total Users</p>
-                            <h3 class="text-2xl font-bold">${totalUsers}</h3>
-                        </div>
-                    </div>
+    <main>
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <!-- Total Vehicles -->
+            <div class="stat-card">
+                <div class="icon-wrapper blue">
+                    <i class="fas fa-car blue"></i>
                 </div>
-
-                <!-- Total Revenue -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-yellow-500 bg-opacity-10">
-                            <i class="fas fa-dollar-sign text-yellow-500 text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-500 text-sm">Total Revenue</p>
-                            <h3 class="text-2xl font-bold">$${totalRevenue}</h3>
-                        </div>
-                    </div>
-                </div>
+                <div class="label">Total Vehicles</div>
+                <div class="value">${totalVehicles}</div>
             </div>
 
-            <!-- Recent Bookings -->
-            <div class="bg-white rounded-lg shadow mb-8">
-                <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Recent Bookings</h2>
+            <!-- Active Bookings -->
+            <div class="stat-card">
+                <div class="icon-wrapper green">
+                    <i class="fas fa-calendar-check green"></i>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <c:forEach items="${recentBookings}" var="booking">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#${booking.bookingId}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.userName}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.vehicleName}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.startDateTime}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            ${booking.status == 'CONFIRMED' ? 'bg-green-100 text-green-800' : 
-                                              booking.status == 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 
-                                              'bg-red-100 text-red-800'}">
-                                            ${booking.status}
+                <div class="label">Active Bookings</div>
+                <div class="value">${activeBookings}</div>
+            </div>
+
+            <!-- Total Users -->
+            <div class="stat-card">
+                <div class="icon-wrapper purple">
+                    <i class="fas fa-users purple"></i>
+                </div>
+                <div class="label">Total Users</div>
+                <div class="value">${totalUsers}</div>
+            </div>
+
+            <!-- Total Revenue -->
+            <div class="stat-card">
+                <div class="icon-wrapper yellow">
+                    <i class="fas fa-dollar-sign yellow"></i>
+                </div>
+                <div class="label">Total Revenue</div>
+                <div class="value">$${totalRevenue}</div>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Recent Bookings</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>User</th>
+                        <th>Vehicle</th>
+                        <th>Start Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${recentBookings}" var="booking">
+                        <tr>
+                            <td>#${booking.bookingId}</td>
+                            <td>${booking.userName}</td>
+                            <td>${booking.vehicleName}</td>
+                            <td>${booking.startDateTime}</td>
+                            <td>
+                                        <span class="status-badge ${booking.status == 'CONFIRMED' ? 'status-confirmed' :
+                                                                   booking.status == 'PENDING' ? 'status-pending' :
+                                                                   'status-cancelled'}">
+                                                ${booking.status}
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <a href="${pageContext.request.contextPath}/admin/bookings/view?id=${booking.bookingId}" 
-                                           class="text-indigo-600 hover:text-indigo-900">View Details</a>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
+                            </td>
+                            <td>
+                                <a href="${pageContext.request.contextPath}/admin/bookings/view?id=${booking.bookingId}"
+                                   class="view-link">View Details</a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            <!-- Quick Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                    <div class="space-y-4">
-                        <a href="${pageContext.request.contextPath}/admin/vehicles/add" 
-                           class="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                            Add New Vehicle
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/bookings/create" 
-                           class="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
-                            Create New Booking
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/users/add" 
-                           class="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-                            Add New User
-                        </a>
-                    </div>
-                </div>
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Quick Actions</h2>
             </div>
-        </main>
-    </div>
-
-    <script>
-        // Add any JavaScript functionality here
-    </script>
+            <div class="action-buttons">
+                <a href="${pageContext.request.contextPath}/admin/vehicles/add"
+                   class="btn btn-primary">
+                    Add New Vehicle
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/bookings/create"
+                   class="btn btn-success">
+                    Create New Booking
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/users/add"
+                   class="btn btn-purple">
+                    Add New User
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html> 

@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
 
@@ -15,9 +17,11 @@ public class UserDao {
 
     public static final String SELECT_USER_BY_EMAIL_PASSWORD = "SELECT * FROM users WHERE email = ? AND password = ?";
     public static final String SELECT_USER_BY_EMAIL = "SELECT * FROM users WHERE email = ?";
-    public static final String SELECT_USER_BY_ID = "SELECT * FROM users WHERE id = ?";
+    public static final String SELECT_USER_BY_ID = "SELECT * FROM users WHERE userId = ?";
     public static final String SELECT_USER_BY_NAME = "SELECT * FROM users WHERE first_name = ? AND last_name = ?";
     public static final String SELECT_USER_BY_PHONE = "SELECT * FROM users WHERE phone = ?";
+    public static final String SELECT_ALL_USERS = "SELECT * FROM users ORDER BY createdAt DESC";
+    public static final String DELETE_USER = "DELETE FROM users WHERE userId = ?";
 
 
     public static int registerUser(User user) {
@@ -126,6 +130,38 @@ public class UserDao {
             return rs.next();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(SELECT_ALL_USERS);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("userId"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setCreatedAt(rs.getString("createdAt"));
+                users.add(user);
+            }
+        }
+        return users;
+    }
+
+    public static boolean deleteUser(int userId) throws SQLException {
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(DELETE_USER)) {
+            
+            ps.setInt(1, userId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 

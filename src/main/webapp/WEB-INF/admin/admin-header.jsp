@@ -1,17 +1,81 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">
+<style>
+    .admin-header {
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .user-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .welcome-text {
+        font-size: 0.875rem;
+        color: #374151;
+    }
+
+    .user-name {
+        font-weight: 600;
+    }
+
+    .logout-form {
+        display: inline;
+    }
+
+    .logout-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        border: none;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: white;
+        background-color: #dc2626;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .logout-button:hover {
+        background-color: #b91c1c;
+    }
+
+    .logout-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc2626;
+    }
+</style>
+
+<header class="admin-header">
+    <div class="header-container">
+        <h1 class="page-title">
             <c:out value="${pageTitle}" default="Dashboard"/>
         </h1>
-        <div class="flex items-center space-x-4">
-            <div class="text-sm text-gray-700">
-                Welcome, <span class="font-semibold">${sessionScope.user.firstName}</span>
+        <div class="user-section">
+            <div class="welcome-text">
+                Welcome, <span class="user-name">${sessionScope.user.firstName}</span>
             </div>
-            <form action="${pageContext.request.contextPath}/logout" method="post" class="inline">
-                <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                    Logout
+            <form action="${pageContext.request.contextPath}/logout" method="post" class="logout-form">
+                <button type="submit" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </form>
         </div>

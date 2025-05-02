@@ -6,154 +6,241 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicle Management - AutoRent</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .main-content {
+            margin-left: 256px;
+            padding: 20px;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+        }
+
+        .content {
+            padding: 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body>
     <c:set var="pageTitle" value="Vehicle Management" scope="request"/>
-    <%@ include file="components/admin-sidebar.jsp" %>
-    
-    <div class="ml-64 min-h-screen">
-        <%@ include file="components/admin-header.jsp" %>
+    <div class="admin-container">
+        <%@ include file="components/admin-sidebar.jsp" %>
         
-        <main class="p-6">
-            <!-- Page Header -->
-            <div class="mb-8 flex justify-between items-center">
-                <h2 class="text-2xl font-bold text-gray-900">Vehicles</h2>
-                <a href="${pageContext.request.contextPath}/admin/vehicles/add" 
-                   class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                    <i class="fas fa-plus mr-2"></i> Add New Vehicle
-                </a>
-            </div>
+        <div class="main-content">
+            <%@ include file="components/admin-header.jsp" %>
+            
+            <main class="content">
+                <!-- Page Header -->
+                <div class="header-actions">
+                    <h2 class="page-title">Vehicles</h2>
+                    <button onclick="openModal()" class="add-button">
+                        <i class="fas fa-plus"></i> Add New Vehicle
+                    </button>
+                </div>
 
-            <!-- Filters -->
-            <div class="bg-white rounded-lg shadow mb-6 p-4">
-                <form action="${pageContext.request.contextPath}/admin/vehicles" method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label for="type" class="block text-sm font-medium text-gray-700">Vehicle Type</label>
-                        <select id="type" name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">All Types</option>
-                            <option value="SUV" ${param.type == 'SUV' ? 'selected' : ''}>SUV</option>
-                            <option value="Sedan" ${param.type == 'Sedan' ? 'selected' : ''}>Sedan</option>
-                            <option value="Hatchback" ${param.type == 'Hatchback' ? 'selected' : ''}>Hatchback</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                        <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="">All Status</option>
-                            <option value="Available" ${param.status == 'Available' ? 'selected' : ''}>Available</option>
-                            <option value="Booked" ${param.status == 'Booked' ? 'selected' : ''}>Booked</option>
-                            <option value="Maintenance" ${param.status == 'Maintenance' ? 'selected' : ''}>Maintenance</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-                            <i class="fas fa-filter mr-2"></i> Filter
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Vehicles Table -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rent/Day</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <c:forEach items="${vehicles}" var="vehicle">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="h-10 w-10 flex-shrink-0">
-                                            <img class="h-10 w-10 rounded-full" src="${vehicle.imageUrl}" alt="${vehicle.name}">
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">${vehicle.name}</div>
-                                            <div class="text-sm text-gray-500">${vehicle.color}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vehicle.type}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${vehicle.rentPerDay}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        ${vehicle.availabilityStatus == 'Available' ? 'bg-green-100 text-green-800' : 
-                                          vehicle.availabilityStatus == 'Booked' ? 'bg-red-100 text-red-800' : 
-                                          'bg-yellow-100 text-yellow-800'}">
-                                        ${vehicle.availabilityStatus}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <a href="${pageContext.request.contextPath}/admin/vehicles/edit?id=${vehicle.vehicleId}" 
-                                       class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                    <a href="#" onclick="confirmDelete(${vehicle.vehicleId})"
-                                       class="text-red-600 hover:text-red-900">Delete</a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-
-                <!-- Pagination -->
-                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    <div class="flex-1 flex justify-between sm:hidden">
-                        <a href="?page=${currentPage - 1}" 
-                           class="${currentPage == 1 ? 'invisible' : ''} relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            Previous
-                        </a>
-                        <a href="?page=${currentPage + 1}"
-                           class="${currentPage == totalPages ? 'invisible' : ''} relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            Next
-                        </a>
-                    </div>
-                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm text-gray-700">
-                                Showing <span class="font-medium">${(currentPage - 1) * itemsPerPage + 1}</span> to 
-                                <span class="font-medium">${Math.min(currentPage * itemsPerPage, totalItems)}</span> of 
-                                <span class="font-medium">${totalItems}</span> results
-                            </p>
+                <!-- Modal Form -->
+                <div id="addVehicleModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Add New Vehicle</h2>
+                            <button onclick="closeModal()" class="close-button">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
-                        <div>
-                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                <a href="?page=${currentPage - 1}" 
-                                   class="${currentPage == 1 ? 'invisible' : ''} relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Previous</span>
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                                
-                                <c:forEach begin="1" end="${totalPages}" var="page">
-                                    <a href="?page=${page}" 
-                                       class="${currentPage == page ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'} relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                        ${page}
-                                    </a>
-                                </c:forEach>
+                        <form action="${pageContext.request.contextPath}/admin/vehicles/add" method="POST" class="admin-form" enctype="multipart/form-data">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="name">Vehicle Name</label>
+                                    <input type="text" id="name" name="name" required class="form-input" placeholder="Enter vehicle name">
+                                </div>
 
-                                <a href="?page=${currentPage + 1}"
-                                   class="${currentPage == totalPages ? 'invisible' : ''} relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Next</span>
-                                    <i class="fas fa-chevron-right"></i>
+                                <div class="form-group">
+                                    <label for="type">Vehicle Category</label>
+                                    <input type="text" id="type" name="type" required class="form-input" placeholder="e.g. SUV, Sedan">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rent_per_day">Rent Per Day</label>
+                                    <input type="number" id="rent_per_day" name="rent_per_day" required class="form-input" step="0.01" min="0" placeholder="Enter daily rent amount">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="availability_status">Availability Status</label>
+                                    <select id="availability_status" name="availability_status" required class="form-select">
+                                        <option value="available">Available</option>
+                                        <option value="rented">Rented</option>
+                                        <option value="maintenance">Maintenance</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="fuel_type">Fuel Type</label>
+                                    <select id="fuel_type" name="fuel_type" required class="form-select">
+                                        <option value="petrol">Petrol</option>
+                                        <option value="diesel">Diesel</option>
+                                        <option value="electric">Electric</option>
+                                        <option value="hybrid">Hybrid</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="no_of_airbags">Number of Airbags</label>
+                                    <input type="number" id="no_of_airbags" name="no_of_airbags" required class="form-input" min="0" placeholder="Enter number of airbags">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="seating_capacity">Seating Capacity</label>
+                                    <input type="number" id="seating_capacity" name="seating_capacity" required class="form-input" min="1" placeholder="Enter seating capacity">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="vehicle_type">Transmission</label>
+                                    <select id="vehicle_type" name="vehicle_type" required class="form-select">
+                                        <option value="manual">Manual</option>
+                                        <option value="automatic">Automatic</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="color">Color</label>
+                                    <input type="text" id="color" name="color" required class="form-input" placeholder="Enter vehicle color">
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="image">Vehicle Image</label>
+                                    <input type="file" id="image" name="image" required class="form-input file-input" accept="image/*">
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" onclick="closeModal()" class="cancel-button">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="submit-button">
+                                    <i class="fas fa-plus"></i> Add Vehicle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Vehicles Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>Type</th>
+                                <th>Rent/Day</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="${vehicles}" var="vehicle">
+                                <tr class="table-row">
+                                    <td>
+                                        <div class="item-row">
+                                            <img class="item-image" src="${vehicle.imageUrl}" alt="${vehicle.name}">
+                                            <div class="item-details">
+                                                <span class="item-primary">${vehicle.name}</span>
+                                                <span class="item-secondary">
+                                                    <i class="fas fa-palette"></i> ${vehicle.color}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-car-side"></i> ${vehicle.type}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-dollar-sign"></i> ${vehicle.rentPerDay}
+                                    </td>
+                                    <td>
+                                        <span class="status-badge ${vehicle.availabilityStatus == 'Available' ? 'status-confirmed' : 
+                                                                   vehicle.availabilityStatus == 'Booked' ? 'status-cancelled' : 
+                                                                   'status-pending'}">
+                                            <i class="fas ${vehicle.availabilityStatus == 'Available' ? 'fa-check-circle' : 
+                                                          vehicle.availabilityStatus == 'Booked' ? 'fa-clock' : 
+                                                          'fa-exclamation-circle'}"></i>
+                                            ${vehicle.availabilityStatus}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/admin/vehicles/edit?id=${vehicle.vehicleId}" 
+                                           class="action-link action-edit">
+                                           <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a href="#" onclick="confirmDelete(${vehicle.vehicleId})"
+                                           class="action-link action-delete">
+                                           <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+
+                    <div class="table-footer">
+                        <div class="results-info">
+                            Showing ${(currentPage - 1) * itemsPerPage + 1} to ${Math.min(currentPage * itemsPerPage, totalItems)} of ${totalItems} results
+                        </div>
+                        <div class="pagination">
+                            <a href="?page=${currentPage - 1}" 
+                               class="pagination-link ${currentPage == 1 ? 'disabled' : ''}">
+                                <i class="fas fa-chevron-left"></i>
+                                Previous
+                            </a>
+                            
+                            <c:forEach begin="1" end="${totalPages}" var="page">
+                                <a href="?page=${page}" 
+                                   class="pagination-link ${currentPage == page ? 'active' : ''}">
+                                    ${page}
                                 </a>
-                            </nav>
+                            </c:forEach>
+
+                            <a href="?page=${currentPage + 1}"
+                               class="pagination-link ${currentPage == totalPages ? 'disabled' : ''}">
+                                Next
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
     <script>
         function confirmDelete(vehicleId) {
             if (confirm('Are you sure you want to delete this vehicle?')) {
                 window.location.href = '${pageContext.request.contextPath}/admin/vehicles/delete?id=' + vehicleId;
+            }
+        }
+
+        function openModal() {
+            document.getElementById('addVehicleModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('addVehicleModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addVehicleModal');
+            if (event.target === modal) {
+                closeModal();
             }
         }
     </script>

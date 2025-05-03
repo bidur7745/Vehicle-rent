@@ -214,7 +214,17 @@ public class VehicleController extends HttpServlet {
                 jsonResponse.addProperty("vehicleType", vehicle.getVehicleType());
                 jsonResponse.addProperty("color", vehicle.getColor());
                 
-                System.out.println("Vehicle found: " + vehicle.toString());
+                // Log all properties to assist with debugging
+                System.out.println("Vehicle found with ID: " + vehicleId);
+                System.out.println("Name: " + vehicle.getName());
+                System.out.println("Type: " + vehicle.getType());
+                System.out.println("Rent per day: " + vehicle.getRentPerDay());
+                System.out.println("Availability status: " + vehicle.getAvailabilityStatus());
+                System.out.println("Fuel type: " + vehicle.getFuelType());
+                System.out.println("Number of airbags: " + vehicle.getNoOfAirbags());
+                System.out.println("Seating capacity: " + vehicle.getSeatingCapacity());
+                System.out.println("Vehicle type: " + vehicle.getVehicleType());
+                System.out.println("Color: " + vehicle.getColor());
             } else {
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Vehicle not found");

@@ -234,6 +234,10 @@
                                         <option value="Diesel">Diesel</option>
                                         <option value="Electric">Electric</option>
                                         <option value="Hybrid">Hybrid</option>
+                                        <option value="petrol">petrol</option>
+                                        <option value="diesel">diesel</option>
+                                        <option value="electric">electric</option>
+                                        <option value="hybrid">hybrid</option>
                                     </select>
                                 </div>
 
@@ -252,6 +256,8 @@
                                     <select id="edit_vehicle_type" name="vehicle_type" required class="form-select">
                                         <option value="Manual">Manual</option>
                                         <option value="Automatic">Automatic</option>
+                                        <option value="manual">manual</option>
+                                        <option value="automatic">automatic</option>
                                     </select>
                                 </div>
 
@@ -429,47 +435,86 @@
             });
         });
 
-        // Edit Vehicle Functions
-        function openEditModal(vehicleId) {
-            console.log('Opening edit modal for vehicle ID:', vehicleId);
-            
-            // Create the URL with the ID directly in the path
-            const url = `${pageContext.request.contextPath}/admin/vehicles/edit/${vehicleId}`;
-            console.log('Fetching from URL:', url);
-            
-            fetch(url)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Received data:', data);
-                    if (data.success) {
-                        document.getElementById('edit_vehicle_id').value = data.vehicleId;
-                        document.getElementById('edit_name').value = data.name;
-                        document.getElementById('edit_type').value = data.type;
-                        document.getElementById('edit_rent_per_day').value = data.rentPerDay;
-                        document.getElementById('edit_availability_status').value = data.availabilityStatus;
-                        document.getElementById('edit_fuel_type').value = data.fuelType;
-                        document.getElementById('edit_no_of_airbags').value = data.noOfAirbags;
-                        document.getElementById('edit_seating_capacity').value = data.seatingCapacity;
-                        document.getElementById('edit_vehicle_type').value = data.vehicleType;
-                        document.getElementById('edit_color').value = data.color;
-                        
-                        document.getElementById('editVehicleModal').style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        alert('Error: ' + (data.message || 'Failed to load vehicle details'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error loading vehicle details. Please try again.');
+        // Edit Vehicle Functions - Fix for dropdowns
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event for edit buttons
+            document.querySelectorAll('.action-edit').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    console.log('Edit URL:', url);
+                    
+                    fetch(url)
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            if (!response.ok) {
+                                throw new Error(`Network response was not ok: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Received data:', data);
+                            if (data.success) {
+                                // Set form values
+                                document.getElementById('edit_vehicle_id').value = data.vehicleId;
+                                document.getElementById('edit_name').value = data.name || '';
+                                document.getElementById('edit_type').value = data.type || '';
+                                document.getElementById('edit_rent_per_day').value = data.rentPerDay || '';
+                                
+                                // Set dropdown values - ensure match by normalizing case
+                                setDropdownValue('edit_availability_status', data.availabilityStatus);
+                                setDropdownValue('edit_fuel_type', data.fuelType);
+                                setDropdownValue('edit_vehicle_type', data.vehicleType);
+                                
+                                document.getElementById('edit_no_of_airbags').value = data.noOfAirbags || 0;
+                                document.getElementById('edit_seating_capacity').value = data.seatingCapacity || 0;
+                                document.getElementById('edit_color').value = data.color || '';
+                                
+                                // Show the modal
+                                document.getElementById('editVehicleModal').style.display = 'flex';
+                                document.body.style.overflow = 'hidden';
+                            } else {
+                                alert('Error: ' + (data.message || 'Failed to load vehicle details'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error loading vehicle details. Please try again.');
+                        });
                 });
-        }
+            });
+            
+            // Helper function to set dropdown value
+            function setDropdownValue(dropdownId, value) {
+                if (!value) return;
+                
+                const dropdown = document.getElementById(dropdownId);
+                if (!dropdown) return;
+                
+                const normalizedValue = value.toLowerCase();
+                
+                // Try to find exact match first
+                for (let i = 0; i < dropdown.options.length; i++) {
+                    const option = dropdown.options[i];
+                    if (option.value === value) {
+                        dropdown.selectedIndex = i;
+                        return;
+                    }
+                }
+                
+                // Try case-insensitive match
+                for (let i = 0; i < dropdown.options.length; i++) {
+                    const option = dropdown.options[i];
+                    if (option.value.toLowerCase() === normalizedValue) {
+                        dropdown.selectedIndex = i;
+                        return;
+                    }
+                }
+                
+                // If still no match, log it for debugging
+                console.warn(`Could not find matching option for ${dropdownId} with value '${value}'`);
+            }
+        });
 
         function closeEditModal() {
             document.getElementById('editVehicleModal').style.display = 'none';

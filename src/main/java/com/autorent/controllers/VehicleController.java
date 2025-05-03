@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Base64;
 
-
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024, // 1 MB
     maxFileSize = 1024 * 1024 * 10,  // 10 MB
@@ -89,15 +88,32 @@ public class VehicleController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        System.out.println("VehicleController doGet called");
+        String servletPath = request.getServletPath();
+        String requestURI = request.getRequestURI();
+        
+        System.out.println("Debug - VehicleController:");
+        System.out.println("PathInfo: " + pathInfo);
+        System.out.println("ServletPath: " + servletPath);
+        System.out.println("RequestURI: " + requestURI);
 
-        // Handle both /admin/vehicles and /admin/vehicles/
+        // Handle root vehicle management page
         if (pathInfo == null || "/".equals(pathInfo) || "".equals(pathInfo)) {
-            // List all vehicles
-            request.setAttribute("vehicles", vehicleService.getAllVehicles());
-            request.getRequestDispatcher("/WEB-INF/admin/vehicles-management.jsp")
-                  .forward(request, response);
+            try {
+                // List all vehicles
+                request.setAttribute("vehicles", vehicleService.getAllVehicles());
+                // Forward to the JSP page
+                request.getRequestDispatcher("/WEB-INF/admin/vehicles-management.jsp").forward(request, response);
+                return;
+            } catch (Exception e) {
+                System.err.println("Error in VehicleController.doGet: " + e.getMessage());
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading vehicles");
+                return;
+            }
         }
+        
+        // If we get here, the path wasn't recognized
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found");
     }
 
     @Override

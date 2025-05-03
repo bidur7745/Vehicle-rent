@@ -83,8 +83,8 @@
         </a>
 
         <!-- Vehicles Management -->
-        <a href="${pageContext.request.contextPath}/admin/vehicles" 
-           class="nav-item ${pageContext.request.servletPath == '/admin/vehicles-management.jsp' ? 'active' : ''}">
+        <a href="${pageContext.request.contextPath}/admin/vehicles/" 
+           class="nav-item ${pageContext.request.servletPath == '/WEB-INF/admin/vehicles-management.jsp' ? 'active' : ''}">
             <i class="fas fa-car"></i>
             Vehicles
         </a>

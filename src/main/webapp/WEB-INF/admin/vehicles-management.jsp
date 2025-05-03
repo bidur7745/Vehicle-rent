@@ -154,7 +154,7 @@
                                 <tr class="table-row">
                                     <td>
                                         <div class="item-row">
-                                            <img class="item-image" src="${vehicle.imageUrl}" alt="${vehicle.name}">
+                                            <img class="item-image" src="${vehicle.image}" alt="${vehicle.name}">
                                             <div class="item-details">
                                                 <span class="item-primary">${vehicle.name}</span>
                                                 <span class="item-secondary">
@@ -167,7 +167,7 @@
                                         <i class="fas fa-car-side"></i> ${vehicle.type}
                                     </td>
                                     <td>
-                                        <i class="fas fa-dollar-sign"></i> ${vehicle.rentPerDay}
+                                        <p>RS</p></i> ${vehicle.rentPerDay}
                                     </td>
                                     <td>
                                         <span class="status-badge ${vehicle.availabilityStatus == 'Available' ? 'status-confirmed' : 

@@ -26,7 +26,7 @@ CREATE TABLE vehicles (
                           seating_capacity INT,
                           vehicle_type ENUM('manual', 'automatic'),
                           color VARCHAR(50),
-                          image_url TEXT,
+                          image LONGBLOB,
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

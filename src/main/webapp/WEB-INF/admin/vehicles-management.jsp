@@ -55,7 +55,11 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <form action="${pageContext.request.contextPath}/admin/vehicles/add" method="POST" class="admin-form" enctype="multipart/form-data">
+                        <form action="${pageContext.request.contextPath}/admin/vehicles/add/" 
+                              method="POST" 
+                              class="admin-form" 
+                              enctype="multipart/form-data"
+                              id="addVehicleForm">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="name">Vehicle Name</label>
@@ -116,7 +120,8 @@
 
                                 <div class="form-group full-width">
                                     <label for="image">Vehicle Image</label>
-                                    <input type="file" id="image" name="image" required class="form-input file-input" accept="image/*">
+                                    <input type="file" id="image" name="image" required class="form-input file-input" accept="image/*" onchange="previewImage(this)">
+                                    <div id="imagePreview" class="image-preview"></div>
                                 </div>
                             </div>
 
@@ -243,6 +248,45 @@
                 closeModal();
             }
         }
+
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal();
+                    window.location.reload();
+                } else {
+                    alert('Error adding vehicle: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding vehicle. Please try again.');
+            });
+        });
     </script>
 </body>
 </html> 

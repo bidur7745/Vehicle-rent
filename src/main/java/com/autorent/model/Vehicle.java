@@ -1,5 +1,7 @@
 package com.autorent.model;
 
+import java.util.Arrays;
+
 public class Vehicle {
     private int vehicleId;
     private String name;
@@ -11,29 +13,15 @@ public class Vehicle {
     private int seatingCapacity;
     private String vehicleType;
     private String color;
-    private String imageUrl;
+    private byte[] image; // <-- Changed from String to byte[]
     private String createdAt;
-
-    // Constructors,
 
     public Vehicle() {
     }
 
-    public Vehicle(String name, String type, double rentPerDay, String availabilityStatus, String fuelType, int noOfAirbags, int seatingCapacity, String vehicleType, String color, String imageUrl, String createdAt) {
-        this.name = name;
-        this.type = type;
-        this.rentPerDay = rentPerDay;
-        this.availabilityStatus = availabilityStatus;
-        this.fuelType = fuelType;
-        this.noOfAirbags = noOfAirbags;
-        this.seatingCapacity = seatingCapacity;
-        this.vehicleType = vehicleType;
-        this.color = color;
-        this.imageUrl = imageUrl;
-        this.createdAt = createdAt;
-    }
-
-    public Vehicle(int vehicleId, String name, String type, double rentPerDay, String availabilityStatus, String fuelType, int noOfAirbags, int seatingCapacity, String vehicleType, String color, String imageUrl, String createdAt) {
+    public Vehicle(int vehicleId, String name, String type, double rentPerDay, String availabilityStatus,
+                   String fuelType, int noOfAirbags, int seatingCapacity, String vehicleType,
+                   String color, byte[] image, String createdAt) {
         this.vehicleId = vehicleId;
         this.name = name;
         this.type = type;
@@ -44,11 +32,11 @@ public class Vehicle {
         this.seatingCapacity = seatingCapacity;
         this.vehicleType = vehicleType;
         this.color = color;
-        this.imageUrl = imageUrl;
+        this.image = image;
         this.createdAt = createdAt;
     }
-    // Getters & Setters
 
+    // Getters & Setters
 
     public int getVehicleId() {
         return vehicleId;
@@ -130,12 +118,12 @@ public class Vehicle {
         this.color = color;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public byte[] getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(byte[] image) {
+        this.image= image;
     }
 
     public String getCreatedAt() {
@@ -144,5 +132,23 @@ public class Vehicle {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "vehicleId=" + vehicleId +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", rentPerDay=" + rentPerDay +
+                ", availabilityStatus='" + availabilityStatus + '\'' +
+                ", fuelType='" + fuelType + '\'' +
+                ", noOfAirbags=" + noOfAirbags +
+                ", seatingCapacity=" + seatingCapacity +
+                ", vehicleType='" + vehicleType + '\'' +
+                ", color='" + color + '\'' +
+                ", imageData=" + Arrays.toString(image) +
+                ", createdAt='" + createdAt + '\'' +
+                '}';
     }
 }

@@ -1,4 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.autorent.services.VehicleService" %>
+<%@ page import="com.autorent.model.Vehicle" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Base64" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,17 +40,9 @@
                         <label for="price">Price Range</label>
                         <select id="price" class="form-control">
                             <option value="">All Prices</option>
-                            <option value="0-50">Rs0 - Rs5000/day</option>
-                            <option value="51-100">Rs5100 - Rs10000/day</option>
-                            <option value="101+">$101+/day</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="availability">Availability</label>
-                        <select id="availability" class="form-control">
-                            <option value="">Any Time</option>
-                            <option value="today">Available Today</option>
-                            <option value="week">This Week</option>
+                            <option value="0-5000">Rs0 - Rs5000/day</option>
+                            <option value="5001-10000">Rs5001 - Rs10000/day</option>
+                            <option value="10001+">Rs10001+/day</option>
                         </select>
                     </div>
                 </div>
@@ -56,47 +52,58 @@
         <section class="vehicles-grid">
             <div class="container">
                 <div class="vehicle-cards">
-                    <!-- Vehicle Card 1 -->
+                    <%
+                        VehicleService vehicleService = new VehicleService();
+                        List<Vehicle> vehicles = vehicleService.getAllVehicles();
+                        
+                        if (vehicles != null && !vehicles.isEmpty()) {
+                            for (Vehicle vehicle : vehicles) {
+                                // Convert byte[] to Base64 image string if image exists
+                                String imageBase64 = "";
+                                if (vehicle.getImage() != null && vehicle.getImage().length > 0) {
+                                    imageBase64 = Base64.getEncoder().encodeToString(vehicle.getImage());
+                                }
+                                
+                                String availabilityStatus = vehicle.getAvailabilityStatus();
+                                if (availabilityStatus == null || availabilityStatus.isEmpty()) {
+                                    availabilityStatus = "Available";
+                                }
+                    %>
                     <div class="vehicle-card">
                         <div class="vehicle-image">
-                            <img src="./assets/images/BMW-X7-model-card.webp" alt="BMW X7">
-                            <span class="vehicle-badge">Available</span>
+                            <% if(imageBase64 != null && !imageBase64.isEmpty()) { %>
+                                <img src="data:image/jpeg;base64,<%= imageBase64 %>" alt="<%= vehicle.getName() %>" 
+                                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp';">
+                            <% } else { %>
+                                <img src="${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp" alt="<%= vehicle.getName() %>">
+                            <% } %>
+                            <span class="vehicle-badge"><%= availabilityStatus %></span>
                         </div>
                         <div class="vehicle-info">
-                            <h3>BMW X7</h3>
+                            <h3><%= vehicle.getName() %></h3>
                             <div class="vehicle-features">
-                                <span><i class="fas fa-users"></i> 7 Seats</span>
-                                <span><i class="fas fa-cog"></i> Automatic</span>
-                                <span><i class="fas fa-gas-pump"></i> Diesel</span>
+                                <span><i class="fas fa-users"></i> <%= vehicle.getSeatingCapacity() %> Seats</span>
+                                <span><i class="fas fa-cog"></i> <%= vehicle.getType() %></span>
+                                <% if(vehicle.getFuelType() != null && !vehicle.getFuelType().isEmpty()) { %>
+                                    <span><i class="fas fa-gas-pump"></i> <%= vehicle.getFuelType() %></span>
+                                <% } %>
                             </div>
                             <div class="vehicle-price">
-                                <span class="price">Rs4000/day</span>
-                                <a href="booking.html" class="btn btn-primary">Book Now</a>
+                                <span class="price">Rs<%= vehicle.getRentPerDay() %>/day</span>
+                                <a href="booking.jsp?id=<%= vehicle.getVehicleId() %>" class="btn btn-primary">Book Now</a>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Vehicle Card 2 -->
-                    <div class="vehicle-card">
-                        <div class="vehicle-image">
-                            <img src="./assetes/toyota.jpg" alt="Toyota Camry">
-                            <span class="vehicle-badge">Available</span>
-                        </div>
-                        <div class="vehicle-info">
-                            <h3>Toyota Camry</h3>
-                            <div class="vehicle-features">
-                                <span><i class="fas fa-users"></i> 5 Seats</span>
-                                <span><i class="fas fa-cog"></i> Automatic</span>
-                                <span><i class="fas fa-gas-pump"></i> Petrol</span>
-                            </div>
-                            <div class="vehicle-price">
-                                <span class="price">Rs6000/day</span>
-                                <a href="booking.html" class="btn btn-primary">Book Now</a>
-                            </div>
-                        </div>
+                    <%
+                            }
+                        } else {
+                    %>
+                    <div class="no-vehicles">
+                        <p>No vehicles available at the moment. Check back soon!</p>
                     </div>
-
-                    <!-- Add more vehicle cards as needed -->
+                    <%
+                        }
+                    %>
                 </div>
             </div>
         </section>
@@ -123,6 +130,88 @@
                 navContainer.classList.remove('active');
                 mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
             }
+        });
+        
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const categorySelect = document.getElementById('category');
+            const priceSelect = document.getElementById('price');
+            const vehicleCards = document.querySelectorAll('.vehicle-card');
+            
+            function applyFilters() {
+                const selectedCategory = categorySelect.value.toLowerCase();
+                const selectedPrice = priceSelect.value;
+                
+                let visibleCount = 0;
+                
+                vehicleCards.forEach(card => {
+                    let showCard = true;
+                    
+                    // Filter by category
+                    if (selectedCategory) {
+                        // Look for vehicle type in features section
+                        const features = card.querySelectorAll('.vehicle-features span');
+                        let matchFound = false;
+                        console.log("Category:", selectedCategory);
+
+                        
+                        features.forEach(feature => {
+                            const featureText = feature.textContent.toLowerCase();
+                            if (featureText.includes(selectedCategory)) {
+                                matchFound = true;
+                            }
+                        });
+                        
+                        // Also check vehicle name
+                        const vehicleName = card.querySelector('h3').textContent.toLowerCase();
+                        if (vehicleName.includes(selectedCategory)) {
+                            matchFound = true;
+                        }
+                        
+                        if (!matchFound) {
+                            showCard = false;
+                        }
+                    }
+                    
+                    // Filter by price
+                    if (selectedPrice && showCard) {
+                        const priceText = card.querySelector('.price').textContent;
+                        const price = parseFloat(priceText.replace('Rs', '').replace('/day', '').trim());
+                        
+                        if (selectedPrice === '0-5000') {
+                            if (price > 5000) showCard = false;
+                        } else if (selectedPrice === '5001-10000') {
+                            if (price < 5001 || price > 10000) showCard = false;
+                        } else if (selectedPrice === '10001+') {
+                            if (price < 10001) showCard = false;
+                        }
+                        console.log("Price Range:", selectedPrice);
+                    }
+                    
+                    card.style.display = showCard ? '' : 'none';
+                    if (showCard) visibleCount++;
+                });
+                
+                // Handle no results message
+                let noVehiclesMsg = document.querySelector('.no-vehicles');
+                
+                if (visibleCount === 0) {
+                    if (!noVehiclesMsg) {
+                        noVehiclesMsg = document.createElement('div');
+                        noVehiclesMsg.className = 'no-vehicles';
+                        noVehiclesMsg.innerHTML = '<p>No vehicles match your selected filters.</p>';
+                        document.querySelector('.vehicle-cards').appendChild(noVehiclesMsg);
+                    }
+                } else if (noVehiclesMsg) {
+                    noVehiclesMsg.remove();
+                }
+                
+                console.log(`Filter applied: ${visibleCount} vehicles visible`);
+            }
+            
+            // Attach filter events
+            categorySelect.addEventListener('change', applyFilters);
+            priceSelect.addEventListener('change', applyFilters);
         });
     </script>
 </body>

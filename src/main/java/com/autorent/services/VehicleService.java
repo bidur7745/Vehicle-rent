@@ -48,4 +48,13 @@ public class VehicleService {
             return null;
         }
     }
+
+    public boolean updateVehicle(Vehicle vehicle) {
+        try {
+            return vehicleDAO.update(vehicle) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 } 

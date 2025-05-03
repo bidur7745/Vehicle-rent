@@ -27,6 +27,60 @@
                 margin-left: 0;
             }
         }
+
+        .specs-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .specs-details span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .specs-details i {
+            width: 16px;
+            color: #444;
+        }
+        
+        .price-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .price-primary {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .item-primary {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        
+        .item-secondary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -55,7 +109,7 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <form action="${pageContext.request.contextPath}/admin/vehicles/add/" 
+                        <form action="${pageContext.request.contextPath}/admin/vehicles/add" 
                               method="POST" 
                               class="admin-form" 
                               enctype="multipart/form-data"
@@ -137,14 +191,102 @@
                     </div>
                 </div>
 
+                <!-- Edit Vehicle Modal -->
+                <div id="editVehicleModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Edit Vehicle</h2>
+                            <button onclick="closeEditModal()" class="close-button">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form id="editVehicleForm" class="admin-form" enctype="multipart/form-data">
+                            <input type="hidden" id="edit_vehicle_id" name="vehicleId">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="edit_name">Vehicle Name</label>
+                                    <input type="text" id="edit_name" name="name" required class="form-input" placeholder="Enter vehicle name">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_type">Vehicle Category</label>
+                                    <input type="text" id="edit_type" name="type" required class="form-input" placeholder="e.g. SUV, Sedan">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_rent_per_day">Rent Per Day</label>
+                                    <input type="number" id="edit_rent_per_day" name="rent_per_day" required class="form-input" step="0.01" min="0" placeholder="Enter daily rent amount">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_availability_status">Availability Status</label>
+                                    <select id="edit_availability_status" name="availability_status" required class="form-select">
+                                        <option value="Available">Available</option>
+                                        <option value="Rented">Rented</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_fuel_type">Fuel Type</label>
+                                    <select id="edit_fuel_type" name="fuel_type" required class="form-select">
+                                        <option value="Petrol">Petrol</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Electric">Electric</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_no_of_airbags">Number of Airbags</label>
+                                    <input type="number" id="edit_no_of_airbags" name="no_of_airbags" required class="form-input" min="0" placeholder="Enter number of airbags">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_seating_capacity">Seating Capacity</label>
+                                    <input type="number" id="edit_seating_capacity" name="seating_capacity" required class="form-input" min="1" placeholder="Enter seating capacity">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_vehicle_type">Transmission</label>
+                                    <select id="edit_vehicle_type" name="vehicle_type" required class="form-select">
+                                        <option value="Manual">Manual</option>
+                                        <option value="Automatic">Automatic</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit_color">Color</label>
+                                    <input type="text" id="edit_color" name="color" required class="form-input" placeholder="Enter vehicle color">
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="edit_image">Vehicle Image (Optional)</label>
+                                    <input type="file" id="edit_image" name="image" class="form-input file-input" accept="image/*" onchange="previewEditImage(this)">
+                                    <div id="editImagePreview" class="image-preview"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" onclick="closeEditModal()" class="cancel-button">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="submit-button">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- Vehicles Table -->
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Vehicle</th>
-                                <th>Type</th>
-                                <th>Rent/Day</th>
+                                <th>Vehicle Details</th>
+                                <th>Specifications</th>
+                                <th>Pricing</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -153,21 +295,30 @@
                             <c:forEach items="${vehicles}" var="vehicle">
                                 <tr class="table-row">
                                     <td>
-                                        <div class="item-row">
-                                            <img class="item-image" src="${vehicle.image}" alt="${vehicle.name}">
-                                            <div class="item-details">
-                                                <span class="item-primary">${vehicle.name}</span>
-                                                <span class="item-secondary">
-                                                    <i class="fas fa-palette"></i> ${vehicle.color}
-                                                </span>
-                                            </div>
+                                        <div class="item-details">
+                                            <span class="item-primary">${vehicle.name}</span>
+                                            <span class="item-secondary">
+                                                <i class="fas fa-palette"></i> ${vehicle.color}
+                                            </span>
+                                            <span class="item-secondary">
+                                                <i class="fas fa-car-side"></i> ${vehicle.type}
+                                            </span>
                                         </div>
                                     </td>
                                     <td>
-                                        <i class="fas fa-car-side"></i> ${vehicle.type}
+                                        <div class="specs-details">
+                                            <span><i class="fas fa-gas-pump"></i> ${vehicle.fuelType}</span>
+                                            <span><i class="fas fa-shield-alt"></i> ${vehicle.noOfAirbags} Airbags</span>
+                                            <span><i class="fas fa-users"></i> ${vehicle.seatingCapacity} Seats</span>
+                                            <span><i class="fas fa-cog"></i> ${vehicle.vehicleType}</span>
+                                        </div>
                                     </td>
                                     <td>
-                                        <p>RS</p></i> ${vehicle.rentPerDay}
+                                        <div class="price-details">
+                                            <span class="price-primary">
+                                                <i class="fas fa-rupee-sign"></i> ${vehicle.rentPerDay}/day
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>
                                         <span class="status-badge ${vehicle.availabilityStatus == 'Available' ? 'status-confirmed' : 
@@ -180,13 +331,14 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/admin/vehicles/edit?id=${vehicle.vehicleId}" 
-                                           class="action-link action-edit">
-                                           <i class="fas fa-edit"></i> Edit
+                                        <c:url var="editUrl" value="/admin/vehicles/edit/${vehicle.vehicleId}" />
+                                        <c:url var="deleteUrl" value="/admin/vehicles/delete/${vehicle.vehicleId}" />
+                                        
+                                        <a href="${editUrl}" class="action-link action-edit">
+                                            <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <a href="#" onclick="confirmDelete(${vehicle.vehicleId})"
-                                           class="action-link action-delete">
-                                           <i class="fas fa-trash"></i> Delete
+                                        <a href="${deleteUrl}" class="action-link action-delete">
+                                            <i class="fas fa-trash"></i> Delete
                                         </a>
                                     </td>
                                 </tr>
@@ -225,12 +377,6 @@
     </div>
 
     <script>
-        function confirmDelete(vehicleId) {
-            if (confirm('Are you sure you want to delete this vehicle?')) {
-                window.location.href = '${pageContext.request.contextPath}/admin/vehicles/delete?id=' + vehicleId;
-            }
-        }
-
         function openModal() {
             document.getElementById('addVehicleModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -239,14 +385,8 @@
         function closeModal() {
             document.getElementById('addVehicleModal').style.display = 'none';
             document.body.style.overflow = 'auto';
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('addVehicleModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('addVehicleForm').reset();
         }
 
         function previewImage(input) {
@@ -264,6 +404,7 @@
             }
         }
 
+        // Add Vehicle Form Submission
         document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -279,12 +420,181 @@
                     closeModal();
                     window.location.reload();
                 } else {
-                    alert('Error adding vehicle: ' + data.message);
+                    alert('Error adding vehicle: ' + (data.message || 'Unknown error occurred'));
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Error adding vehicle. Please try again.');
+            });
+        });
+
+        // Edit Vehicle Functions
+        function openEditModal(vehicleId) {
+            console.log('Opening edit modal for vehicle ID:', vehicleId);
+            
+            // Create the URL with the ID directly in the path
+            const url = `${pageContext.request.contextPath}/admin/vehicles/edit/${vehicleId}`;
+            console.log('Fetching from URL:', url);
+            
+            fetch(url)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    if (data.success) {
+                        document.getElementById('edit_vehicle_id').value = data.vehicleId;
+                        document.getElementById('edit_name').value = data.name;
+                        document.getElementById('edit_type').value = data.type;
+                        document.getElementById('edit_rent_per_day').value = data.rentPerDay;
+                        document.getElementById('edit_availability_status').value = data.availabilityStatus;
+                        document.getElementById('edit_fuel_type').value = data.fuelType;
+                        document.getElementById('edit_no_of_airbags').value = data.noOfAirbags;
+                        document.getElementById('edit_seating_capacity').value = data.seatingCapacity;
+                        document.getElementById('edit_vehicle_type').value = data.vehicleType;
+                        document.getElementById('edit_color').value = data.color;
+                        
+                        document.getElementById('editVehicleModal').style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to load vehicle details'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading vehicle details. Please try again.');
+                });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editVehicleModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('editImagePreview').innerHTML = '';
+            document.getElementById('editVehicleForm').reset();
+        }
+
+        function previewEditImage(input) {
+            const preview = document.getElementById('editImagePreview');
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        // Edit Vehicle Form Submission
+        document.getElementById('editVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('${pageContext.request.contextPath}/admin/vehicles/edit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeEditModal();
+                    window.location.reload();
+                } else {
+                    alert('Error updating vehicle: ' + (data.message || 'Unknown error occurred'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating vehicle. Please try again.');
+            });
+        });
+
+        // Add event listeners to edit and delete buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event for edit buttons
+            document.querySelectorAll('.action-edit').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    console.log('Edit URL:', url);
+                    
+                    fetch(url)
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            if (!response.ok) {
+                                throw new Error(`Network response was not ok: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Received data:', data);
+                            if (data.success) {
+                                document.getElementById('edit_vehicle_id').value = data.vehicleId;
+                                document.getElementById('edit_name').value = data.name;
+                                document.getElementById('edit_type').value = data.type;
+                                document.getElementById('edit_rent_per_day').value = data.rentPerDay;
+                                document.getElementById('edit_availability_status').value = data.availabilityStatus;
+                                document.getElementById('edit_fuel_type').value = data.fuelType;
+                                document.getElementById('edit_no_of_airbags').value = data.noOfAirbags;
+                                document.getElementById('edit_seating_capacity').value = data.seatingCapacity;
+                                document.getElementById('edit_vehicle_type').value = data.vehicleType;
+                                document.getElementById('edit_color').value = data.color;
+                                
+                                document.getElementById('editVehicleModal').style.display = 'flex';
+                                document.body.style.overflow = 'hidden';
+                            } else {
+                                alert('Error: ' + (data.message || 'Failed to load vehicle details'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error loading vehicle details. Please try again.');
+                        });
+                });
+            });
+            
+            // Add click event for delete buttons
+            document.querySelectorAll('.action-delete').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (confirm('Are you sure you want to delete this vehicle?')) {
+                        const url = this.getAttribute('href');
+                        console.log('Delete URL:', url);
+                        
+                        fetch(url, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            console.log('Delete response status:', response.status);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Delete response data:', data);
+                            if (data.success) {
+                                window.location.reload();
+                            } else {
+                                alert('Error deleting vehicle: ' + (data.message || 'Unknown error occurred'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Delete error:', error);
+                            alert('Error deleting vehicle. Please try again.');
+                        });
+                    }
+                });
             });
         });
     </script>

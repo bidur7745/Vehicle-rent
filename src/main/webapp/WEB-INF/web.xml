@@ -44,7 +44,7 @@
         <url-pattern>/user/bookings</url-pattern>
     </servlet-mapping>
 
-<servlet>
+<!-- <servlet>
     <servlet-name>VehicleController</servlet-name>
     <servlet-class>com.autorent.controllers.VehicleController</servlet-class>
 </servlet>
@@ -55,7 +55,7 @@
 <servlet-mapping>
     <servlet-name>VehicleController</servlet-name>
     <url-pattern>/admin/vehicles/*</url-pattern>
-</servlet-mapping>
+</servlet-mapping> -->
 
 
     <error-page>

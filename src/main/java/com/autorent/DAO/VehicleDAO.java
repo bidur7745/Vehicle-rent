@@ -86,6 +86,35 @@ public class VehicleDAO {
         }
     }
     
+    public int update(Vehicle vehicle) throws SQLException {
+        String sql = "UPDATE vehicles SET name=?, type=?, rent_per_day=?, availability_status=?, " +
+                    "fuel_type=?, no_of_airbags=?, seating_capacity=?, vehicle_type=?, color=? " +
+                    (vehicle.getImage() != null ? ", image=? " : "") +
+                    "WHERE vehicle_id=?";
+        
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, vehicle.getName());
+            stmt.setString(2, vehicle.getType());
+            stmt.setBigDecimal(3, BigDecimal.valueOf(vehicle.getRentPerDay()));
+            stmt.setString(4, vehicle.getAvailabilityStatus());
+            stmt.setString(5, vehicle.getFuelType());
+            stmt.setInt(6, vehicle.getNoOfAirbags());
+            stmt.setInt(7, vehicle.getSeatingCapacity());
+            stmt.setString(8, vehicle.getVehicleType());
+            stmt.setString(9, vehicle.getColor());
+            
+            int paramIndex = 10;
+            if (vehicle.getImage() != null) {
+                stmt.setBytes(paramIndex++, vehicle.getImage());
+            }
+            stmt.setInt(paramIndex, vehicle.getVehicleId());
+            
+            return stmt.executeUpdate();
+        }
+    }
+    
     private Vehicle mapResultSetToVehicle(ResultSet rs) throws SQLException {
         Vehicle vehicle = new Vehicle();
         vehicle.setVehicleId(rs.getInt("vehicle_id"));

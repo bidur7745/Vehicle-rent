@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Base64;
 
+@WebServlet("/admin/vehicles/*")
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024, // 1 MB
     maxFileSize = 1024 * 1024 * 10,  // 10 MB
@@ -36,6 +37,8 @@ public class VehicleController extends HttpServlet {
 
         if ("/add".equals(pathInfo)) {
             handleAddVehicle(request, response);
+        } else if ("/edit".equals(pathInfo)) {
+            handleEditVehicle(request, response);
         }
     }
 
@@ -84,50 +87,202 @@ public class VehicleController extends HttpServlet {
         response.getWriter().write(jsonResponse.toString());
     }
 
+    private void handleEditVehicle(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
+
+        try {
+            int vehicleId = Integer.parseInt(request.getParameter("vehicleId"));
+            Vehicle vehicle = new Vehicle();
+            vehicle.setVehicleId(vehicleId);
+            vehicle.setName(request.getParameter("name"));
+            vehicle.setType(request.getParameter("type"));
+            vehicle.setRentPerDay(new BigDecimal(request.getParameter("rent_per_day")).doubleValue());
+            vehicle.setAvailabilityStatus(request.getParameter("availability_status"));
+            vehicle.setFuelType(request.getParameter("fuel_type"));
+            vehicle.setNoOfAirbags(Integer.parseInt(request.getParameter("no_of_airbags")));
+            vehicle.setSeatingCapacity(Integer.parseInt(request.getParameter("seating_capacity")));
+            vehicle.setVehicleType(request.getParameter("vehicle_type"));
+            vehicle.setColor(request.getParameter("color"));
+
+            // Handle image file upload if provided
+            Part filePart = request.getPart("image");
+            if (filePart != null && filePart.getSize() > 0) {
+                InputStream fileContent = filePart.getInputStream();
+                byte[] imageBytes = fileContent.readAllBytes();
+                vehicle.setImage(imageBytes);
+            }
+
+            boolean success = vehicleService.updateVehicle(vehicle);
+
+            if (success) {
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("message", "Vehicle updated successfully");
+            } else {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Failed to update vehicle");
+            }
+
+        } catch (Exception e) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Error: " + e.getMessage());
+        }
+
+        response.getWriter().write(jsonResponse.toString());
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        String servletPath = request.getServletPath();
-        String requestURI = request.getRequestURI();
-        
-        System.out.println("Debug - VehicleController:");
+        System.out.println("GET request received");
         System.out.println("PathInfo: " + pathInfo);
-        System.out.println("ServletPath: " + servletPath);
-        System.out.println("RequestURI: " + requestURI);
+        System.out.println("QueryString: " + request.getQueryString());
+        System.out.println("Request URI: " + request.getRequestURI());
 
-        // Handle root vehicle management page
-        if (pathInfo == null || "/".equals(pathInfo) || "".equals(pathInfo)) {
-            try {
-                // List all vehicles
-                request.setAttribute("vehicles", vehicleService.getAllVehicles());
-                // Forward to the JSP page
-                request.getRequestDispatcher("/WEB-INF/admin/vehicles-management.jsp").forward(request, response);
-                return;
-            } catch (Exception e) {
-                System.err.println("Error in VehicleController.doGet: " + e.getMessage());
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading vehicles");
-                return;
+        try {
+            // Handle root vehicle management page
+            if (pathInfo == null || "/".equals(pathInfo)) {
+                System.out.println("Handling list vehicles request");
+                handleListVehicles(request, response);
+            } 
+            // Handle get vehicle for editing with ID in path
+            else if (pathInfo.matches("/edit/\\d+")) {
+                System.out.println("Handling edit vehicle request with ID in path");
+                // Extract ID from path - format is /edit/{id}
+                String idStr = pathInfo.substring("/edit/".length());
+                int vehicleId = Integer.parseInt(idStr);
+                handleGetVehicleById(vehicleId, response);
             }
+            // Handle edit endpoint without ID
+            else if ("/edit".equals(pathInfo)) {
+                System.out.println("Handling edit request without ID in path, checking for query param");
+                String idStr = request.getParameter("id");
+                if (idStr != null && !idStr.trim().isEmpty()) {
+                    int vehicleId = Integer.parseInt(idStr);
+                    handleGetVehicleById(vehicleId, response);
+                } else {
+                    System.out.println("No ID provided in either path or query parameter");
+                    response.setContentType("application/json");
+                    JsonObject jsonResponse = new JsonObject();
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Vehicle ID is required");
+                    response.getWriter().write(jsonResponse.toString());
+                }
+            } else {
+                System.out.println("Unrecognized path, forwarding to list view");
+                handleListVehicles(request, response);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid vehicle ID format: " + e.getMessage());
+            response.setContentType("application/json");
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Invalid vehicle ID format: " + e.getMessage());
+            response.getWriter().write(jsonResponse.toString());
+        } catch (Exception e) {
+            System.out.println("Exception in doGet: " + e.getMessage());
+            e.printStackTrace();
+            response.setContentType("application/json");
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Error processing request: " + e.getMessage());
+            response.getWriter().write(jsonResponse.toString());
+        }
+    }
+
+    private void handleGetVehicleById(int vehicleId, HttpServletResponse response) 
+            throws ServletException, IOException {
+        System.out.println("Getting vehicle with ID: " + vehicleId);
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
+        
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            
+            if (vehicle != null) {
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("vehicleId", vehicle.getVehicleId());
+                jsonResponse.addProperty("name", vehicle.getName());
+                jsonResponse.addProperty("type", vehicle.getType());
+                jsonResponse.addProperty("rentPerDay", vehicle.getRentPerDay());
+                jsonResponse.addProperty("availabilityStatus", vehicle.getAvailabilityStatus());
+                jsonResponse.addProperty("fuelType", vehicle.getFuelType());
+                jsonResponse.addProperty("noOfAirbags", vehicle.getNoOfAirbags());
+                jsonResponse.addProperty("seatingCapacity", vehicle.getSeatingCapacity());
+                jsonResponse.addProperty("vehicleType", vehicle.getVehicleType());
+                jsonResponse.addProperty("color", vehicle.getColor());
+                
+                System.out.println("Vehicle found: " + vehicle.toString());
+            } else {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Vehicle not found");
+                System.out.println("Vehicle not found with ID: " + vehicleId);
+            }
+        } catch (Exception e) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Error retrieving vehicle: " + e.getMessage());
+            System.out.println("Error retrieving vehicle: " + e.getMessage());
+            e.printStackTrace();
         }
         
-        // If we get here, the path wasn't recognized
-        response.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested resource was not found");
+        System.out.println("Sending response: " + jsonResponse.toString());
+        response.getWriter().write(jsonResponse.toString());
+    }
+
+    private void handleListVehicles(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        try {
+            request.setAttribute("vehicles", vehicleService.getAllVehicles());
+            request.getRequestDispatcher("/WEB-INF/admin/vehicles-management.jsp").forward(request, response);
+        } catch (Exception e) {
+            System.err.println("Error in VehicleController.handleListVehicles: " + e.getMessage());
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading vehicles");
+        }
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
-        if (pathInfo != null && pathInfo.startsWith("/delete/")) {
-            int vehicleId = Integer.parseInt(pathInfo.substring("/delete/".length()));
-            boolean success = vehicleService.deleteVehicle(vehicleId);
+        response.setContentType("application/json");
+        JsonObject jsonResponse = new JsonObject();
+
+        try {
+            System.out.println("Delete request received");
+            System.out.println("PathInfo: " + pathInfo);
+            System.out.println("QueryString: " + request.getQueryString());
+            System.out.println("Request URI: " + request.getRequestURI());
             
-            response.setContentType("application/json");
-            JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("success", success);
-            response.getWriter().write(jsonResponse.toString());
+            if (pathInfo != null && pathInfo.matches("/delete/\\d+")) {
+                String idStr = pathInfo.substring("/delete/".length());
+                System.out.println("Extracted ID from path: " + idStr);
+                
+                int vehicleId = Integer.parseInt(idStr);
+                boolean success = vehicleService.deleteVehicle(vehicleId);
+                
+                jsonResponse.addProperty("success", success);
+                jsonResponse.addProperty("message", success ? "Vehicle deleted successfully" : "Failed to delete vehicle");
+                System.out.println("Delete operation result: " + (success ? "success" : "failed"));
+            } else {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Invalid delete request: path must be /delete/{id} with a numeric ID");
+                System.out.println("Invalid delete path format");
+            }
+        } catch (NumberFormatException e) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Invalid vehicle ID format: " + e.getMessage());
+            System.out.println("NumberFormatException: " + e.getMessage());
+        } catch (Exception e) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Error: " + e.getMessage());
+            System.out.println("Exception in doDelete: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        response.getWriter().write(jsonResponse.toString());
+        System.out.println("Response sent: " + jsonResponse.toString());
     }
 } 

@@ -1,11 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.autorent.services.VehicleService" %>
+<%@ page import="com.autorent.model.Vehicle" %>
+<%@ page import="java.util.Base64" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Vehicle - AutoRent</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -338,11 +341,52 @@
                 flex-direction: column;
             }
         }
+
+        /* Add red border for validation errors */
+        .form-control.error {
+            border: 1px solid #dc3545;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body>
     <jsp:include page="components/navbar.jsp" />
 
+    <%
+        // Get vehicle ID from URL parameter
+        String vehicleIdParam = request.getParameter("id");
+        int vehicleId = 0;
+        Vehicle vehicle = null;
+        String imageBase64 = "";
+        
+        try {
+            if (vehicleIdParam != null && !vehicleIdParam.isEmpty()) {
+                vehicleId = Integer.parseInt(vehicleIdParam);
+                VehicleService vehicleService = new VehicleService();
+                vehicle = vehicleService.getVehicleById(vehicleId);
+                
+                if (vehicle != null && vehicle.getImage() != null && vehicle.getImage().length > 0) {
+                    imageBase64 = Base64.getEncoder().encodeToString(vehicle.getImage());
+                }
+            }
+        } catch (NumberFormatException e) {
+            // Invalid ID format, leave vehicle as null
+        }
+        
+        if (vehicle == null) {
+            // Redirect to vehicles page if vehicle not found
+            response.sendRedirect("vehicles.jsp");
+            return;
+        }
+        
+        // Check if user is logged in - you might want to redirect to login page if not
+        // For now we'll allow bookings without login for demonstration
+    %>
 
     <main>
         <section class="booking-hero">
@@ -355,29 +399,36 @@
         <section class="container">
             <div class="booking-container">
                 <div class="vehicle-summary">
-                    <img src="./assets/images/BMW-X7-model-card.webp" alt="BMW X7">
-                    <h3>BMW X7</h3>
+                    <% if (imageBase64 != null && !imageBase64.isEmpty()) { %>
+                        <img src="data:image/jpeg;base64,<%= imageBase64 %>" alt="<%= vehicle.getName() %>" 
+                             onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp';">
+                    <% } else { %>
+                        <img src="${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp" alt="<%= vehicle.getName() %>">
+                    <% } %>
+                    <h3><%= vehicle.getName() %></h3>
                     <div class="vehicle-features">
                         <div class="feature-item">
                             <i class="fas fa-users"></i>
-                            <span>7 Seats</span>
+                            <span><%= vehicle.getSeatingCapacity() %> Seats</span>
                         </div>
                         <div class="feature-item">
                             <i class="fas fa-cog"></i>
-                            <span>Automatic</span>
+                            <span><%= vehicle.getType() %></span>
                         </div>
+                        <% if (vehicle.getFuelType() != null && !vehicle.getFuelType().isEmpty()) { %>
                         <div class="feature-item">
                             <i class="fas fa-gas-pump"></i>
-                            <span>Diesel</span>
+                            <span><%= vehicle.getFuelType() %></span>
                         </div>
+                        <% } %>
                         <div class="feature-item">
-                            <i class="fas fa-suitcase"></i>
-                            <span>4 Bags</span>
+                            <i class="fas fa-car"></i>
+                            <span><%= vehicle.getVehicleType() %></span>
                         </div>
                     </div>
                     <div class="price-item">
                         <span>Base Rate:</span>
-                        <span>Rs2000/day</span>
+                        <span>Rs<%= vehicle.getRentPerDay() %>/day</span>
                     </div>
                     <div class="booking-notice">
                         <i class="fas fa-info-circle"></i>
@@ -388,40 +439,55 @@
                 <div class="booking-details">
                     <h3>Booking Details</h3>
                     <form id="bookingForm" action="process-booking" method="post">
+                        <!-- Add hidden fields -->
+                        <input type="hidden" name="vehicleId" value="<%= vehicle.getVehicleId() %>">
+                        <input type="hidden" name="userId" value="${sessionScope.userId}">
+                        <input type="hidden" name="totalPrice" id="hiddenTotalPrice" value="0">
+                        
                         <div class="form-group">
                             <label for="pickupLocation">Pickup Location</label>
-                            <select id="pickupLocation" name="pickupLocation" class="form-control" required>
-                                <option value="">Select pickup location</option>
-                                <option value="airport">Tribhuvan International Airport</option>
-                                <option value="city">Kathmandu City Center</option>
-                                <option value="thamel">Thamel</option>
-                            </select>
+                            <input type="text" id="pickupLocation" name="pickupLocation" class="form-control" placeholder="Enter pickup location" required>
+                            <div class="error-message" id="pickupLocation-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dropLocation">Drop Location</label>
+                            <input type="text" id="dropLocation" name="dropLocation" class="form-control" placeholder="Enter drop location" required>
+                            <div class="error-message" id="dropLocation-error"></div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="startDate">Pickup Date</label>
-                            <input type="date" id="startDate" name="startDate" class="form-control" required>
+                        <div class="form-row" style="display: flex; gap: 1rem;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="startDate">Pickup Date</label>
+                                <input type="date" id="startDate" name="startDate" class="form-control" required>
+                                <div class="error-message" id="startDate-error"></div>
+                            </div>
+
+                            <div class="form-group" style="flex: 1;">
+                                <label for="pickupTime">Pickup Time</label>
+                                <input type="time" id="pickupTime" name="pickupTime" class="form-control" required>
+                                <div class="error-message" id="pickupTime-error"></div>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="startTime">Pickup Time</label>
-                            <input type="time" id="startTime" name="startTime" class="form-control" required>
-                        </div>
+                        <div class="form-row" style="display: flex; gap: 1rem;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="endDate">Return Date</label>
+                                <input type="date" id="endDate" name="endDate" class="form-control" required>
+                                <div class="error-message" id="endDate-error"></div>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="endDate">Return Date</label>
-                            <input type="date" id="endDate" name="endDate" class="form-control" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="endTime">Return Time</label>
-                            <input type="time" id="endTime" name="endTime" class="form-control" required>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="dropTime">Return Time</label>
+                                <input type="time" id="dropTime" name="dropTime" class="form-control" required>
+                                <div class="error-message" id="dropTime-error"></div>
+                            </div>
                         </div>
 
                         <div class="price-summary">
                             <div class="price-item">
                                 <span>Daily Rate:</span>
-                                <span>Rs2000</span>
+                                <span>Rs<%= vehicle.getRentPerDay() %></span>
                             </div>
                             <div class="price-item">
                                 <span>Number of Days:</span>
@@ -468,30 +534,179 @@
             }
         });
 
-        // Booking calculations
+        // Booking form validation and calculations
         document.addEventListener('DOMContentLoaded', function() {
+            const bookingForm = document.getElementById('bookingForm');
             const startDate = document.getElementById('startDate');
             const endDate = document.getElementById('endDate');
+            const pickupTime = document.getElementById('pickupTime');
+            const dropTime = document.getElementById('dropTime');
             const daysCount = document.getElementById('daysCount');
-            const totalPrice = document.getElementById('totalPrice');
-            const dailyRate = 2000;
+            const totalPriceDisplay = document.getElementById('totalPrice');
+            const hiddenTotalPrice = document.getElementById('hiddenTotalPrice');
+            
+            // Get the vehicle's daily rate - make sure it's parsed as a number
+            // const dailyRate = Number('<%= vehicle.getRentPerDay() %>'.replace(/[^0-9.]/g, ''));
+            const dailyRate = parseFloat('<%= vehicle.getRentPerDay() %>');
+
             const serviceCharge = 500;
+            
+            console.log("Daily rate loaded:", dailyRate);
 
             function calculatePrice() {
                 if (startDate.value && endDate.value) {
-                    const start = new Date(startDate.value);
-                    const end = new Date(endDate.value);
-                    const diffTime = Math.abs(end - start);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                    
-                    daysCount.textContent = diffDays;
-                    const total = (dailyRate + serviceCharge) * diffDays;
-                    totalPrice.textContent = 'Rs' + total;
+                    try {
+                        const start = new Date(startDate.value);
+                        const end = new Date(endDate.value);
+                        
+                        // Ensure end date is not before start date
+                        if (end < start) {
+                            endDate.classList.add('error');
+                            document.getElementById('endDate-error').textContent = 'Return date cannot be before pickup date';
+                            return;
+                        } else {
+                            endDate.classList.remove('error');
+                            document.getElementById('endDate-error').textContent = '';
+                        }
+                        
+                        // Calculate number of days (inclusive of start and end dates)
+                        const diffTime = Math.abs(end - start);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        // Ensure minimum 1 day rental
+                        const rentalDays = Math.max(1, diffDays);
+                        
+                        daysCount.textContent = rentalDays;
+                        
+                        // Calculate total price
+                        const total = (dailyRate + serviceCharge) * rentalDays;
+                        
+                        // Update display and hidden field
+                        totalPriceDisplay.textContent = 'Rs' + total.toFixed(2);
+                        hiddenTotalPrice.value = total.toFixed(2);
+                        
+                        console.log('Price calculation:', { 
+                            dailyRate, 
+                            serviceCharge, 
+                            rentalDays, 
+                            total 
+                        });
+                    } catch (error) {
+                        console.error('Error calculating price:', error);
+                        daysCount.textContent = '0';
+                        totalPriceDisplay.textContent = 'Rs0.00';
+                        hiddenTotalPrice.value = '0.00';
+                    }
                 }
             }
 
+            // Add event listeners for date fields
             startDate.addEventListener('change', calculatePrice);
             endDate.addEventListener('change', calculatePrice);
+            
+            // Initial calculation if dates are already filled (e.g. from a previous page)
+            if (startDate.value && endDate.value) {
+                calculatePrice();
+            }
+            
+            // Set default dates if none are set
+            if (!startDate.value) {
+                const today = new Date();
+                startDate.value = today.toISOString().split('T')[0];
+                
+                // Set end date to tomorrow by default
+                if (!endDate.value) {
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    endDate.value = tomorrow.toISOString().split('T')[0];
+                    
+                    // Calculate price with default dates
+                    calculatePrice();
+                }
+            }
+            
+            // Form validation
+            bookingForm.addEventListener('submit', function(event) {
+                let isValid = true;
+                
+                // Validate pickup location
+                const pickupLocation = document.getElementById('pickupLocation');
+                if (!pickupLocation.value) {
+                    pickupLocation.classList.add('error');
+                    document.getElementById('pickupLocation-error').textContent = 'Please enter a pickup location';
+                    isValid = false;
+                } else {
+                    pickupLocation.classList.remove('error');
+                    document.getElementById('pickupLocation-error').textContent = '';
+                }
+                
+                // Validate drop location
+                const dropLocation = document.getElementById('dropLocation');
+                if (!dropLocation.value) {
+                    dropLocation.classList.add('error');
+                    document.getElementById('dropLocation-error').textContent = 'Please enter a drop location';
+                    isValid = false;
+                } else {
+                    dropLocation.classList.remove('error');
+                    document.getElementById('dropLocation-error').textContent = '';
+                }
+                
+                // Validate start date
+                if (!startDate.value) {
+                    startDate.classList.add('error');
+                    document.getElementById('startDate-error').textContent = 'Please select a pickup date';
+                    isValid = false;
+                } else {
+                    startDate.classList.remove('error');
+                    document.getElementById('startDate-error').textContent = '';
+                }
+                
+                // Validate end date
+                if (!endDate.value) {
+                    endDate.classList.add('error');
+                    document.getElementById('endDate-error').textContent = 'Please select a return date';
+                    isValid = false;
+                } else {
+                    // Check that end date is not before start date
+                    const start = new Date(startDate.value);
+                    const end = new Date(endDate.value);
+                    if (end < start) {
+                        endDate.classList.add('error');
+                        document.getElementById('endDate-error').textContent = 'Return date cannot be before pickup date';
+                        isValid = false;
+                    } else {
+                        endDate.classList.remove('error');
+                        document.getElementById('endDate-error').textContent = '';
+                    }
+                }
+                
+                // Validate pickup time
+                if (!pickupTime.value) {
+                    pickupTime.classList.add('error');
+                    document.getElementById('pickupTime-error').textContent = 'Please select a pickup time';
+                    isValid = false;
+                } else {
+                    pickupTime.classList.remove('error');
+                    document.getElementById('pickupTime-error').textContent = '';
+                }
+                
+                // Validate drop time
+                if (!dropTime.value) {
+                    dropTime.classList.add('error');
+                    document.getElementById('dropTime-error').textContent = 'Please select a return time';
+                    isValid = false;
+                } else {
+                    dropTime.classList.remove('error');
+                    document.getElementById('dropTime-error').textContent = '';
+                }
+                
+                // Recalculate price to ensure it's correct
+                calculatePrice();
+                
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
 
             // Set minimum date to today
             const today = new Date().toISOString().split('T')[0];
@@ -501,6 +716,7 @@
             // Validate end date is after start date
             startDate.addEventListener('change', function() {
                 endDate.min = startDate.value;
+                calculatePrice();
             });
         });
     </script>

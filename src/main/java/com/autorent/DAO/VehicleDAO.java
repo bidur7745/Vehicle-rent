@@ -115,6 +115,20 @@ public class VehicleDAO {
         }
     }
     
+    public int countAll() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM vehicles";
+        
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+    
     private Vehicle mapResultSetToVehicle(ResultSet rs) throws SQLException {
         Vehicle vehicle = new Vehicle();
         vehicle.setVehicleId(rs.getInt("vehicle_id"));

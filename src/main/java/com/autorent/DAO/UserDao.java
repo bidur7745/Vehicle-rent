@@ -154,6 +154,20 @@ public class UserDao {
         return users;
     }
 
+    public static int countAllUsers() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users";
+        
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
     public static boolean deleteUser(int userId) throws SQLException {
         try (Connection connection = DbConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(DELETE_USER)) {

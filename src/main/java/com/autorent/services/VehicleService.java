@@ -57,4 +57,13 @@ public class VehicleService {
             return false;
         }
     }
+
+    public int getVehicleCount() {
+        try {
+            return vehicleDAO.countAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 } 

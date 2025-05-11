@@ -36,7 +36,19 @@ public class DbConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASS);
+        try {
+            System.out.println("DbConnection: Attempting to connect to database at " + URL);
+            System.out.println("DbConnection: Using username: " + USER);
+            Connection conn = DriverManager.getConnection(URL, USER, PASS);
+            System.out.println("DbConnection: Successfully connected to database");
+            return conn;
+        } catch (SQLException e) {
+            System.err.println("DbConnection ERROR: Failed to connect to database");
+            System.err.println("DbConnection ERROR Details: " + e.getMessage());
+            System.err.println("DbConnection SQL State: " + e.getSQLState());
+            System.err.println("DbConnection Error Code: " + e.getErrorCode());
+            throw e;
+        }
     }
 
 

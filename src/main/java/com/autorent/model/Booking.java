@@ -1,6 +1,6 @@
 package com.autorent.model;
 
-public class Booking {
+public class    Booking {
     private int bookingId;
     private int userId;
     private int vehicleId;

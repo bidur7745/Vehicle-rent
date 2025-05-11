@@ -432,7 +432,11 @@
                     </div>
                     <div class="booking-notice">
                         <i class="fas fa-info-circle"></i>
-                        <span>Free cancellation up to 24 hours before pickup</span>
+                        <span>Free cancellation up to 24 hours before pickup</span><br>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span> In case of vehicle damage, you are liable for repair costs. </span><br>
+                        <i class="fas fa-id-card"></i> 
+                        <span>A valid driving license and minimum age of 18+ are mandatory to book a vehicle.</span>
                     </div>
                 </div>
 
@@ -545,19 +549,42 @@
             const totalPriceDisplay = document.getElementById('totalPrice');
             const hiddenTotalPrice = document.getElementById('hiddenTotalPrice');
             
-            // Get the vehicle's daily rate - make sure it's parsed as a number
-            // const dailyRate = Number('<%= vehicle.getRentPerDay() %>'.replace(/[^0-9.]/g, ''));
-            const dailyRate = parseFloat('<%= vehicle.getRentPerDay() %>');
-
+            // Get the vehicle's daily rate directly from JSP - debug line
+            console.log("Raw rent per day value: <%= vehicle.getRentPerDay() %>");
+            const dailyRate = parseInt('<%= vehicle.getRentPerDay() %>');
+            console.log("Parsed daily rate:", dailyRate);
             const serviceCharge = 500;
             
-            console.log("Daily rate loaded:", dailyRate);
+            console.log('Initial daily rate:', dailyRate);
+
+            // Set today's date as minimum for pickup date
+            const today = new Date().toISOString().split('T')[0];
+            startDate.min = today;
+            endDate.min = today;
+            
+            // Initialize pickup date to today
+            startDate.value = today;
+            
+            // Initialize return date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            endDate.value = tomorrow.toISOString().split('T')[0];
+            
+            // Set default pickup and return times
+            pickupTime.value = "10:00";
+            dropTime.value = "10:00";
+            
+            // Calculate price immediately
+            calculatePrice();
 
             function calculatePrice() {
                 if (startDate.value && endDate.value) {
                     try {
                         const start = new Date(startDate.value);
                         const end = new Date(endDate.value);
+                        
+                        console.log("Start date:", start);
+                        console.log("End date:", end);
                         
                         // Ensure end date is not before start date
                         if (end < start) {
@@ -573,57 +600,51 @@
                         const diffTime = Math.abs(end - start);
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                         
-                        // Ensure minimum 1 day rental
+                        // Ensure at least 1 day
                         const rentalDays = Math.max(1, diffDays);
                         
+                        console.log('Calculated days:', rentalDays);
                         daysCount.textContent = rentalDays;
                         
                         // Calculate total price
                         const total = (dailyRate + serviceCharge) * rentalDays;
+                        console.log('Calculation breakdown:', dailyRate, '+', serviceCharge, '*', rentalDays, '=', total);
                         
-                        // Update display and hidden field
                         totalPriceDisplay.textContent = 'Rs' + total.toFixed(2);
                         hiddenTotalPrice.value = total.toFixed(2);
-                        
-                        console.log('Price calculation:', { 
-                            dailyRate, 
-                            serviceCharge, 
-                            rentalDays, 
-                            total 
-                        });
                     } catch (error) {
                         console.error('Error calculating price:', error);
-                        daysCount.textContent = '0';
-                        totalPriceDisplay.textContent = 'Rs0.00';
-                        hiddenTotalPrice.value = '0.00';
                     }
                 }
             }
 
-            // Add event listeners for date fields
+            // Add event listeners for date and time fields
             startDate.addEventListener('change', calculatePrice);
             endDate.addEventListener('change', calculatePrice);
+            pickupTime.addEventListener('change', calculatePrice);
+            dropTime.addEventListener('change', calculatePrice);
             
-            // Initial calculation if dates are already filled (e.g. from a previous page)
-            if (startDate.value && endDate.value) {
-                calculatePrice();
-            }
-            
-            // Set default dates if none are set
-            if (!startDate.value) {
-                const today = new Date();
-                startDate.value = today.toISOString().split('T')[0];
-                
-                // Set end date to tomorrow by default
-                if (!endDate.value) {
-                    const tomorrow = new Date(today);
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    endDate.value = tomorrow.toISOString().split('T')[0];
-                    
-                    // Calculate price with default dates
-                    calculatePrice();
+            // Validate end date is after start date
+            startDate.addEventListener('change', function() {
+                // Make sure end date is at least the same as start date
+                if (new Date(endDate.value) < new Date(startDate.value)) {
+                    endDate.value = startDate.value;
                 }
-            }
+                endDate.min = startDate.value;
+            calculatePrice();
+            });
+            
+            // Explicitly prevent end date from being before start date
+            endDate.addEventListener('change', function() {
+                const start = new Date(startDate.value);
+                const end = new Date(endDate.value);
+                
+                if (end < start) {
+                    alert('Return date cannot be before pickup date');
+                    endDate.value = startDate.value;
+                }
+                calculatePrice();
+            });
             
             // Form validation
             bookingForm.addEventListener('submit', function(event) {
@@ -700,23 +721,27 @@
                     document.getElementById('dropTime-error').textContent = '';
                 }
                 
-                // Recalculate price to ensure it's correct
+                // Force recalculate price to ensure it's correct before submitting
                 calculatePrice();
                 
                 if (!isValid) {
                     event.preventDefault();
+                } else {
+                    // Double check the total price is set correctly
+                    const calculatedTotal = (dailyRate + serviceCharge) * parseInt(daysCount.textContent);
+                    console.log("Final submission price:", calculatedTotal.toFixed(2));
+                    hiddenTotalPrice.value = calculatedTotal.toFixed(2);
+
+                    // Additional check to ensure price is not zero
+                    if (parseFloat(hiddenTotalPrice.value) <= 0) {
+                        console.error("Error: Total price is zero or negative!");
+                        alert("There was an error calculating the price. Please try again.");
+                        event.preventDefault();
+                        return;
+                    }
+                    
+                    console.log("Submitting form with total price: " + hiddenTotalPrice.value);
                 }
-            });
-
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
-            startDate.min = today;
-            endDate.min = today;
-
-            // Validate end date is after start date
-            startDate.addEventListener('change', function() {
-                endDate.min = startDate.value;
-                calculatePrice();
             });
         });
     </script>

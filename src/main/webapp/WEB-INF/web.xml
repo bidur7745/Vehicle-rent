@@ -16,6 +16,16 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <!-- Filter Mappings -->
+    <filter>
+        <filter-name>AdminAuthFilter</filter-name>
+        <filter-class>com.autorent.filters.AdminAuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AdminAuthFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+
     <!-- URL Mappings -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -43,6 +53,8 @@
         <servlet-name>UserBookingsServlet</servlet-name>
         <url-pattern>/user/bookings</url-pattern>
     </servlet-mapping>
+    
+    <!-- Note: ProcessBookingServlet and ProcessPaymentServlet use @WebServlet annotations in the Java files -->
 
 <!-- <servlet>
     <servlet-name>VehicleController</servlet-name>
@@ -56,7 +68,6 @@
     <servlet-name>VehicleController</servlet-name>
     <url-pattern>/admin/vehicles/*</url-pattern>
 </servlet-mapping> -->
-
 
     <error-page>
         <error-code>404</error-code>

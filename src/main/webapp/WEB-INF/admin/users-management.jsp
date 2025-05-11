@@ -7,27 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management - AutoRent</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/booking-management.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .main-content {
-            margin-left: 256px;
-            padding: 20px;
-            min-height: 100vh;
-            background-color: #f3f4f6;
-        }
-
-        .content {
-            padding: 20px;
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
-        }
-    </style>
+   
 </head>
 <body>
     <c:set var="pageTitle" value="User Management" scope="request"/>
@@ -41,7 +23,6 @@
                 <!-- Page Header -->
                 <div class="header-actions">
                     <h2 class="page-title">Users</h2>
-
                 </div>
 
                 <!-- Users Table -->
@@ -77,14 +58,9 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/admin/users/edit?id=${user.userId}" 
-                                           class="action-link action-edit">
-                                           <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="#" onclick="confirmDelete(${user.userId})"
-                                           class="action-link action-delete">
-                                           <i class="fas fa-trash"></i> Delete
-                                        </a>
+                                        <span class="action-link action-delete delete-user" data-userid="${user.userId}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </span>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -96,11 +72,35 @@
     </div>
 
     <script>
-        function confirmDelete(userId) {
-            if (confirm('Are you sure you want to delete this user?')) {
-                window.location.href = '${pageContext.request.contextPath}/admin/users/delete?id=' + userId;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to all delete user buttons
+            var deleteButtons = document.querySelectorAll('.delete-user');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var userId = this.getAttribute('data-userid');
+                    confirmDelete(userId);
+                });
+            });
+            
+            // Function to confirm and handle user deletion
+            function confirmDelete(userId) {
+                if (confirm('Are you sure you want to delete this user?')) {
+                    // Create a form and submit it via POST
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '${pageContext.request.contextPath}/admin/users/delete';
+                    
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'id';
+                    input.value = userId;
+                    
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             }
-        }
+        });
     </script>
 </body>
 </html> 

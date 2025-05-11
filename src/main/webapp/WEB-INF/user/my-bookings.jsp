@@ -1,4 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.autorent.model.Booking" %>
+<%@ page import="com.autorent.model.Vehicle" %>
+<%@ page import="com.autorent.services.VehicleService" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Base64" %>
+<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,6 +111,11 @@
 
         .status-cancelled {
             background-color: #dc3545;
+        }
+
+        .status-pending {
+            background-color: #ffc107;
+            color: #333;
         }
 
         .booking-details {
@@ -257,6 +269,13 @@
         String errorMessage = (String) request.getAttribute("errorMessage");
         String successMessage = (String) session.getAttribute("successMessage");
         session.removeAttribute("successMessage");
+        
+        // Set up VehicleService to get vehicle details
+        VehicleService vehicleService = new VehicleService();
+        
+        // Format dates
+        DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     %>
 
     <% if (errorMessage != null) { %>
@@ -282,6 +301,7 @@
                 <label for="statusFilter">Status:</label>
                 <select id="statusFilter" onchange="filterBookings()">
                     <option value="all">All Bookings</option>
+                    <option value="pending">Pending</option>
                     <option value="active">Active</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
@@ -297,7 +317,7 @@
             </div>
         </div>
 
-        <% if (request.getAttribute("bookings") == null || ((java.util.List)request.getAttribute("bookings")).isEmpty()) { %>
+        <% if (request.getAttribute("bookings") == null || ((List<Booking>)request.getAttribute("bookings")).isEmpty()) { %>
             <div class="no-bookings">
                 <i class="fas fa-calendar-times"></i>
                 <h2>No Bookings Found</h2>
@@ -308,40 +328,93 @@
             </div>
         <% } else { %>
             <div class="booking-cards">
-                <!-- Example booking card - Replace with actual data -->
-                <div class="booking-card">
+                <% 
+                    List<Booking> bookings = (List<Booking>) request.getAttribute("bookings");
+                    for(Booking booking : bookings) {
+                        try {
+                            // Get vehicle details
+                            Vehicle vehicle = vehicleService.getVehicleById(booking.getVehicleId());
+                            
+                            // Convert image to base64 if exists
+                            String imageBase64 = "";
+                            if (vehicle.getImage() != null) {
+                                imageBase64 = Base64.getEncoder().encodeToString(vehicle.getImage());
+                            }
+                            
+                            // Format dates for display
+                            LocalDateTime startDate = LocalDateTime.parse(booking.getStartDateTime(), inputFormatter);
+                            LocalDateTime endDate = LocalDateTime.parse(booking.getEndDateTime(), inputFormatter);
+                            String formattedStartDate = startDate.format(displayFormatter);
+                            String formattedEndDate = endDate.format(displayFormatter);
+                            
+                            // Determine booking status class
+                            String statusClass = "";
+                            switch(booking.getStatus().toLowerCase()) {
+                                case "active":
+                                    statusClass = "status-active";
+                                    break;
+                                case "completed":
+                                    statusClass = "status-completed";
+                                    break;
+                                case "cancelled":
+                                    statusClass = "status-cancelled";
+                                    break;
+                                default:
+                                    statusClass = "status-pending";
+                            }
+                %>
+                <div class="booking-card" data-status="<%= booking.getStatus().toLowerCase() %>" data-date="<%= booking.getCreatedAt() %>">
                     <div class="booking-image">
-                        <img src="${pageContext.request.contextPath}/assets/images/cars/car1.jpg" alt="Car">
-                        <span class="booking-status status-active">Active</span>
+                        <% if(imageBase64 != null && !imageBase64.isEmpty()) { %>
+                            <img src="data:image/jpeg;base64,<%= imageBase64 %>" alt="<%= vehicle.getName() %>" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/cars/car1.jpg';">
+                        <% } else { %>
+                            <img src="${pageContext.request.contextPath}/assets/images/cars/car1.jpg" alt="<%= vehicle.getName() %>">
+                        <% } %>
+                        <span class="booking-status <%= statusClass %>"><%= booking.getStatus() %></span>
                     </div>
                     <div class="booking-details">
-                        <h3>Toyota Camry 2023</h3>
+                        <h3><%= vehicle.getName() %></h3>
                         <div class="booking-info">
                             <div class="booking-info-item">
                                 <i class="fas fa-calendar"></i>
-                                <span>15 Mar 2024 - 20 Mar 2024</span>
+                                <span><%= formattedStartDate %> - <%= formattedEndDate %></span>
                             </div>
                             <div class="booking-info-item">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>New York City</span>
+                                <span><%= booking.getPickupLocation() %></span>
                             </div>
                             <div class="booking-info-item">
                                 <i class="fas fa-money-bill-wave"></i>
-                                <span>$350.00</span>
+                                <span>RS <%= String.format("%.2f", booking.getTotalPrice()) %></span>
                             </div>
                         </div>
                         <div class="booking-actions">
-                            <button class="action-btn view-btn" onclick="viewBooking(1)">
+                            <button class="action-btn view-btn" onclick="viewBooking(<%= booking.getBookingId() %>)">
                                 <i class="fas fa-eye"></i>
                                 View Details
                             </button>
-                            <button class="action-btn cancel-btn" onclick="cancelBooking(1)">
-                                <i class="fas fa-times"></i>
-                                Cancel
-                            </button>
+                            <% if (booking.getStatus().equalsIgnoreCase("pending") || booking.getStatus().equalsIgnoreCase("active")) { %>
+                                <button class="action-btn cancel-btn" onclick="cancelBooking(<%= booking.getBookingId() %>)">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </button>
+                            <% } else { %>
+                                <button class="action-btn view-btn" onclick="rebook(<%= booking.getVehicleId() %>)">
+                                    <i class="fas fa-redo"></i>
+                                    Book Again
+                                </button>
+                            <% } %>
                         </div>
                     </div>
                 </div>
+                <% 
+                        } catch(Exception e) {
+                            // Log any errors
+                            System.out.println("Error displaying booking #" + booking.getBookingId() + ": " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    } 
+                %>
             </div>
         <% } %>
     </div>
@@ -352,20 +425,106 @@
         function filterBookings() {
             const statusFilter = document.getElementById('statusFilter').value;
             const dateFilter = document.getElementById('dateFilter').value;
-            // TODO: Implement filtering logic
-            console.log('Filtering bookings:', { status: statusFilter, date: dateFilter });
+            const bookingCards = document.querySelectorAll('.booking-card');
+            
+            bookingCards.forEach(card => {
+                let statusMatch = true;
+                let dateMatch = true;
+                
+                // Status filtering
+                if (statusFilter !== 'all') {
+                    statusMatch = card.getAttribute('data-status') === statusFilter;
+                }
+                
+                // Date filtering
+                if (dateFilter !== 'all') {
+                    const bookingDate = new Date(card.getAttribute('data-date'));
+                    const currentDate = new Date();
+                    
+                    if (dateFilter === 'month') {
+                        dateMatch = bookingDate.getMonth() === currentDate.getMonth() && 
+                                   bookingDate.getFullYear() === currentDate.getFullYear();
+                    } else if (dateFilter === 'year') {
+                        dateMatch = bookingDate.getFullYear() === currentDate.getFullYear();
+                    }
+                }
+                
+                // Display or hide based on filters
+                if (statusMatch && dateMatch) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Check if no visible bookings after filtering
+            checkNoVisibleBookings();
+        }
+        
+        function checkNoVisibleBookings() {
+            const visibleBookings = document.querySelectorAll('.booking-card[style="display: block"]');
+            const bookingCards = document.querySelector('.booking-cards');
+            const noBookingsElement = document.querySelector('.no-bookings');
+            
+            if (visibleBookings.length === 0 && bookingCards && !noBookingsElement) {
+                // Create no results message if all are filtered out
+                const noResults = document.createElement('div');
+                noResults.className = 'no-bookings';
+                noResults.id = 'no-results';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-filter';
+                
+                const title = document.createElement('h2');
+                title.textContent = 'No Bookings Match Your Filters';
+                
+                const message = document.createElement('p');
+                message.textContent = 'Try changing your filter criteria to see more results.';
+                
+                noResults.appendChild(icon);
+                noResults.appendChild(title);
+                noResults.appendChild(message);
+                
+                bookingCards.appendChild(noResults);
+            } else if (visibleBookings.length > 0) {
+                // Remove no results message if there are visible bookings
+                const noResults = document.getElementById('no-results');
+                if (noResults) {
+                    noResults.remove();
+                }
+            }
         }
 
         function viewBooking(bookingId) {
-            // TODO: Implement view booking details
-            console.log('Viewing booking:', bookingId);
+            window.location.href = "${pageContext.request.contextPath}/invoice-redirect.jsp?bookingId=" + bookingId;
         }
 
         function cancelBooking(bookingId) {
-            if (confirm('Are you sure you want to cancel this booking?')) {
-                // TODO: Implement booking cancellation
-                console.log('Cancelling booking:', bookingId);
+            if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                // Submit form to cancel booking
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '${pageContext.request.contextPath}/user/bookings';
+                
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'cancel';
+                
+                const bookingIdInput = document.createElement('input');
+                bookingIdInput.type = 'hidden';
+                bookingIdInput.name = 'bookingId';
+                bookingIdInput.value = bookingId;
+                
+                form.appendChild(actionInput);
+                form.appendChild(bookingIdInput);
+                document.body.appendChild(form);
+                form.submit();
             }
+        }
+        
+        function rebook(vehicleId) {
+            window.location.href = "${pageContext.request.contextPath}/booking.jsp?vehicleId=" + vehicleId;
         }
 
         // Auto-hide toast messages

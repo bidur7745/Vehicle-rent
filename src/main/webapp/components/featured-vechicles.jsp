@@ -96,7 +96,19 @@
                     </div>
                     <div class="vehicle-price">
                         <span class="price">Rs<%= vehicle.getRentPerDay() %>/day</span>
-                        <a href="booking.jsp?id=<%= vehicle.getVehicleId() %>" class="btn btn-primary">Book Now</a>
+                        <% String availabilityStatus = vehicle.getAvailabilityStatus();
+                           if (availabilityStatus == null || availabilityStatus.isEmpty()) {
+                               availabilityStatus = "Available";
+                           }
+                           if (availabilityStatus.equalsIgnoreCase("Available")) { %>
+                            <a href="booking.jsp?id=<%= vehicle.getVehicleId() %>" class="btn btn-primary">Book Now</a>
+                        <% } else if (availabilityStatus.equalsIgnoreCase("Booked")) { %>
+                            <button class="btn btn-booked" disabled>Currently Booked</button>
+                        <% } else if (availabilityStatus.equalsIgnoreCase("Maintenance")) { %>
+                            <button class="btn btn-maintenance" disabled>Under Maintenance</button>
+                        <% } else { %>
+                            <button class="btn btn-booked" disabled><%= availabilityStatus %></button>
+                        <% } %>
                     </div>
                 </div>
             </div>

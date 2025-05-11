@@ -61,6 +61,19 @@ public class UserDao {
              PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_ID);) {
             ps.setInt(1, id);
 
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("userid"));
+                    user.setFirstName(rs.getString("first_name"));
+                    user.setLastName(rs.getString("last_name"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPhone(rs.getString("phone"));
+                    user.setRole(User.Role.valueOf(rs.getString("role")));
+                    user.setCreatedAt(rs.getString("createdAt"));
+                    return user;
+                }
+            }
         }
         catch (SQLException e) {
             // Log the exception details for debugging

@@ -21,17 +21,22 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
        String email = request.getParameter("email");
        String password = request.getParameter("password");
 
+       System.out.println("LoginServlet: Attempting login for email: " + email);
+       
        User user = AuthService.login(email, password);
        if (user == null) {
+           System.out.println("LoginServlet: Login failed - invalid credentials");
            request.setAttribute("errorMessage", "Invalid email or password.");
            request.getRequestDispatcher("login.jsp").forward(request, response);
            return;
        }
 
+       System.out.println("LoginServlet: Login successful for " + user.getFirstName() + " " + user.getLastName());
+       System.out.println("LoginServlet: User role is " + user.getRole());
+       
        HttpSession session = request.getSession();
        session.setAttribute("user", user);
        session.setAttribute("role", user.getRole());
@@ -42,12 +47,11 @@ public class LoginServlet extends HttpServlet {
 
        // Redirect to index page for all users except admin
        if (user.getRole() == User.Role.admin) {
-        response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-    } else {
+           System.out.println("LoginServlet: User is admin, redirecting to admin dashboard");
+           response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+       } else {
+           System.out.println("LoginServlet: User is not admin, redirecting to home page");
            response.sendRedirect(request.getContextPath() + "/index.jsp");
        }
-
-
-
     }
 }

@@ -40,10 +40,19 @@
                         <label for="price">Price Range</label>
                         <select id="price" class="form-control">
                             <option value="">All Prices</option>
-                            <option value="0-5000">Rs0 - Rs5000/day</option>
-                            <option value="5001-10000">Rs5001 - Rs10000/day</option>
-                            <option value="10001+">Rs10001+/day</option>
+                            <option value="0-5000">Under Rs5,000/day</option>
+                            <option value="5001-20000">Rs5,001 - Rs20,000/day</option>
+                            <option value="20001-40000">Rs20,001 - Rs40,000/day</option>
+                            <option value="40001+">Above Rs40,000/day</option>
                         </select>
+                    </div>
+                    <div class="filter-group filter-actions">
+                        <button id="applyFilters" class="btns btn-primarys" title="Apply Filters">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button id="resetFilters" class="btns btn-secondarys" title="Reset Filters">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -77,7 +86,9 @@
                             <% } else { %>
                                 <img src="${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp" alt="<%= vehicle.getName() %>">
                             <% } %>
-                            <span class="vehicle-badge"><%= availabilityStatus %></span>
+                            <span class="vehicle-badge <%= availabilityStatus.equalsIgnoreCase("Available") ? "available" : "booked" %>">
+                                <%= availabilityStatus %>
+                            </span>
                         </div>
                         <div class="vehicle-info">
                             <h3><%= vehicle.getName() %></h3>
@@ -90,7 +101,11 @@
                             </div>
                             <div class="vehicle-price">
                                 <span class="price">Rs<%= vehicle.getRentPerDay() %>/day</span>
-                                <a href="booking.jsp?id=<%= vehicle.getVehicleId() %>" class="btn btn-primary">Book Now</a>
+                                <% if(availabilityStatus.equalsIgnoreCase("Available")) { %>
+                                    <a href="booking.jsp?id=<%= vehicle.getVehicleId() %>" class="btn btn-primary">Book Now</a>
+                                <% } else { %>
+                                    <button class="btn btn-booked" disabled>Currently Booked</button>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -132,87 +147,213 @@
             }
         });
         
-        // Filter functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const categorySelect = document.getElementById('category');
-            const priceSelect = document.getElementById('price');
-            const vehicleCards = document.querySelectorAll('.vehicle-card');
+        // Filter functionality (moved out of DOMContentLoaded)
+        const categorySelect = document.getElementById('category');
+        const priceSelect = document.getElementById('price');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const vehicleCards = document.querySelectorAll('.vehicle-card');
+        
+        function applyFilters() {
+            const selectedCategory = categorySelect.value.toLowerCase();
+            const selectedPrice = priceSelect.value;
             
-            function applyFilters() {
-                const selectedCategory = categorySelect.value.toLowerCase();
-                const selectedPrice = priceSelect.value;
+            let visibleCount = 0;
+            
+            vehicleCards.forEach(card => {
+                let showCard = true;
                 
-                let visibleCount = 0;
-                
-                vehicleCards.forEach(card => {
-                    let showCard = true;
+                // Filter by category
+                if (selectedCategory) {
+                    const vehicleType = card.querySelector('.vehicle-features span:nth-child(2)').textContent.toLowerCase();
+                    const vehicleName = card.querySelector('h3').textContent.toLowerCase();
                     
-                    // Filter by category
-                    if (selectedCategory) {
-                        // Look for vehicle type in features section
-                        const features = card.querySelectorAll('.vehicle-features span');
-                        let matchFound = false;
-                        console.log("Category:", selectedCategory);
-
-                        
-                        features.forEach(feature => {
-                            const featureText = feature.textContent.toLowerCase();
-                            if (featureText.includes(selectedCategory)) {
-                                matchFound = true;
-                            }
-                        });
-                        
-                        // Also check vehicle name
-                        const vehicleName = card.querySelector('h3').textContent.toLowerCase();
-                        if (vehicleName.includes(selectedCategory)) {
-                            matchFound = true;
-                        }
-                        
-                        if (!matchFound) {
-                            showCard = false;
-                        }
+                    if (!vehicleType.includes(selectedCategory) && !vehicleName.includes(selectedCategory)) {
+                        showCard = false;
                     }
-                    
-                    // Filter by price
-                    if (selectedPrice && showCard) {
-                        const priceText = card.querySelector('.price').textContent;
-                        const price = parseFloat(priceText.replace('Rs', '').replace('/day', '').trim());
-                        
-                        if (selectedPrice === '0-5000') {
-                            if (price > 5000) showCard = false;
-                        } else if (selectedPrice === '5001-10000') {
-                            if (price < 5001 || price > 10000) showCard = false;
-                        } else if (selectedPrice === '10001+') {
-                            if (price < 10001) showCard = false;
-                        }
-                        console.log("Price Range:", selectedPrice);
-                    }
-                    
-                    card.style.display = showCard ? '' : 'none';
-                    if (showCard) visibleCount++;
-                });
-                
-                // Handle no results message
-                let noVehiclesMsg = document.querySelector('.no-vehicles');
-                
-                if (visibleCount === 0) {
-                    if (!noVehiclesMsg) {
-                        noVehiclesMsg = document.createElement('div');
-                        noVehiclesMsg.className = 'no-vehicles';
-                        noVehiclesMsg.innerHTML = '<p>No vehicles match your selected filters.</p>';
-                        document.querySelector('.vehicle-cards').appendChild(noVehiclesMsg);
-                    }
-                } else if (noVehiclesMsg) {
-                    noVehiclesMsg.remove();
                 }
                 
-                console.log(`Filter applied: ${visibleCount} vehicles visible`);
-            }
+                // Filter by price
+                if (selectedPrice && showCard) {
+                    const priceText = card.querySelector('.price').textContent;
+                    const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+                    
+                    switch(selectedPrice) {
+                        case '0-5000':
+                            if (price > 5000) showCard = false;
+                            break;
+                        case '5001-20000':
+                            if (price < 5001 || price > 20000) showCard = false;
+                            break;
+                        case '20001-40000':
+                            if (price < 20001 || price > 40000) showCard = false;
+                            break;
+                        case '40001+':
+                            if (price < 40001) showCard = false;
+                            break;
+                    }
+                }
+                
+                card.style.display = showCard ? '' : 'none';
+                if (showCard) visibleCount++;
+            });
             
-            // Attach filter events
-            categorySelect.addEventListener('change', applyFilters);
-            priceSelect.addEventListener('change', applyFilters);
+            // Handle no results message
+            let noVehiclesMsg = document.querySelector('.no-vehicles');
+            
+            if (visibleCount === 0) {
+                if (!noVehiclesMsg) {
+                    noVehiclesMsg = document.createElement('div');
+                    noVehiclesMsg.className = 'no-vehicles';
+                    noVehiclesMsg.innerHTML = '<p>No vehicles match your selected filters.</p>';
+                    document.querySelector('.vehicle-cards').appendChild(noVehiclesMsg);
+                }
+            } else if (noVehiclesMsg) {
+                noVehiclesMsg.remove();
+            }
+        }
+        
+        function resetFilters() {
+            categorySelect.value = '';
+            priceSelect.value = '';
+            applyFilters();
+        }
+        
+        // Attach filter events
+        applyFiltersBtn.addEventListener('click', applyFilters);
+        resetFiltersBtn.addEventListener('click', resetFilters);
+        
+        // Also apply filters when pressing Enter in select elements
+        categorySelect.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        priceSelect.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
         });
     </script>
+
+    <style>
+        .vehicle-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .vehicle-badge.available {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .vehicle-badge.booked {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-booked {
+            background-color: #040a3a;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .btn-booked:hover {
+            background-color: #10022e;
+            opacity: 0.7;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: end;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .btns {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btns i {
+            font-size: 16px;
+        }
+
+        .btn-primarys {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-primarys:hover {
+            background-color: #218838;
+            transform: scale(1.1);
+        }
+
+        .btn-secondarys {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-secondarys:hover {
+            background-color: #c82333;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-actions {
+                justify-content: center;
+            }
+        }
+    </style>
 </body>
 </html> 

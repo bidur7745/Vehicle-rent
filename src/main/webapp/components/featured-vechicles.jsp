@@ -5,6 +5,25 @@
 <%@ page import="java.util.Random" %>
 <%@ page import="java.util.ArrayList" %>
 <section class="featured-vehicles">
+    <style>
+        .vehicle-image {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.vehicle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    /* Debug border */
+    border: 1px solid #ddd;
+}
+
+    </style>
     <div class="container">
         <h2><i class="fas fa-star"></i> Featured Vehicles</h2>
         
@@ -77,9 +96,9 @@
                     }
             %>
             <div class="vehicle-card">
-                <div class="vehicle-image">
+                <div class="vehicle-image  ">
                     <% if(imageBase64 != null && !imageBase64.isEmpty()) { %>
-                        <img src="data:image/jpeg;base64,<%= imageBase64 %>" alt="<%= vehicle.getName() %>" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp';">
+                        <img  src="data:image/jpeg;base64,<%= imageBase64 %>" alt="<%= vehicle.getName() %>" onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp';">
                     <% } else { %>
                         <img src="${pageContext.request.contextPath}/assets/images/BMW-X7-model-card.webp" alt="<%= vehicle.getName() %>">
                     <% } %>

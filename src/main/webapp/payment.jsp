@@ -276,52 +276,36 @@
                     <input type="hidden" name="totalPrice" id="paymentTotalPrice" value="<%= booking.getTotalPrice() %>">
                     
                     <div class="payment-methods">
-                        <div class="payment-method" data-method="ewallet">
+                        <div class="payment-method" data-method="ewallet" style="opacity: 0.7; pointer-events: none;">
                             <div class="payment-method-header">
                                 <i class="fas fa-wallet"></i>
                                 <h4>eWallet</h4>
+                                <span style="margin-left: auto; background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Coming Soon</span>
                             </div>
                             <div class="payment-method-description">
                                 Pay using your digital wallet for quick and secure payment
                             </div>
                             <div class="payment-method-content">
-                                <div class="form-group">
-                                    <label for="ewalletEmail">Email</label>
-                                    <input type="email" id="ewalletEmail" class="form-control" placeholder="Email associated with your eWallet">
-                                </div>
-                                <div class="form-group">
-                                    <label for="ewalletPassword">Password</label>
-                                    <input type="password" id="ewalletPassword" class="form-control" placeholder="eWallet password">
+                                <div style="text-align: center; padding: 20px; color: #666;">
+                                    <i class="fas fa-tools" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                    <p>This payment method is currently under development and will be available soon.</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="payment-method" data-method="card">
+                        <div class="payment-method" data-method="card" style="opacity: 0.7; pointer-events: none;">
                             <div class="payment-method-header">
                                 <i class="fas fa-credit-card"></i>
                                 <h4>Credit/Debit Card</h4>
+                                <span style="margin-left: auto; background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">Coming Soon</span>
                             </div>
                             <div class="payment-method-description">
                                 Pay using Visa, MasterCard, or any other major credit/debit card
                             </div>
                             <div class="payment-method-content">
-                                <div class="form-group">
-                                    <label for="cardNumber">Card Number</label>
-                                    <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456">
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="expiryDate">Expiry Date</label>
-                                        <input type="text" id="expiryDate" class="form-control" placeholder="MM/YY">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="cvv">CVV</label>
-                                        <input type="text" id="cvv" class="form-control" placeholder="123">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cardholderName">Cardholder Name</label>
-                                    <input type="text" id="cardholderName" class="form-control" placeholder="Name on card">
+                                <div style="text-align: center; padding: 20px; color: #666;">
+                                    <i class="fas fa-tools" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                    <p>This payment method is currently under development and will be available soon.</p>
                                 </div>
                             </div>
                         </div>
@@ -338,7 +322,7 @@
                                 <p>No advance payment required. You'll pay the full amount when you pick up the vehicle.</p>
                                 <div class="form-group">
                                     <label>
-                                        <input type="checkbox" id="termsCheckbox">
+                                        <input type="checkbox" id="termsCheckbox" required>
                                         I understand that I must pay the full amount at the time of vehicle pickup
                                     </label>
                                 </div>

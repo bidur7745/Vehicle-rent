@@ -49,39 +49,146 @@
                 <div class="team-grid">
                     <div class="team-card">
                         <div class="image-container">
-                            <img src="./assetes/hal.png" alt="Team Member">
+                            <img src="${pageContext.request.contextPath}/assets/images/bidur.png" alt="David Basnet">
                         </div>
                         <div class="content">
                             <h3>Bidur Siwakoti</h3>
+                            <p>Operations Manager</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="image-container">
+                            <img src="${pageContext.request.contextPath}/assets/images/david.png" alt="David Basnet">
+                        </div>
+                        <div class="content">
+                            <h3>David Basnet</h3>
                             <p>Founder & CEO</p>
                         </div>
                     </div>
                     <div class="team-card">
                         <div class="image-container">
-                            <img src="./assetes/lionel-messi-celebration-f-c-barcelona-hvg443b7e8ycuf0q.png" alt="Team Member">
-                        </div>
-                        <div class="content">
-                            <h3>David Basnet</h3>
-                            <p>Operations Manager</p>
-                        </div>
-                    </div>
-                    <div class="team-card">
-                        <div class="image-container">
-                            <img src="./assetes/khvicha-card-24-25.png" alt="Team Member">
+                            <img src="${pageContext.request.contextPath}/assets/images/anmol.jpg" alt="David Basnet">
                         </div>
                         <div class="content">
                             <h3>Anmoyl Poudel</h3>
                             <p>Customer Relations</p>
                         </div>
                     </div>
+
+                    <div class="team-card">
+                        <div class="image-container">
+                            <img src="${pageContext.request.contextPath}/assets/images/pukar.jpg" alt="David Basnet">
+                        </div>
+                        <div class="content">
+                            <h3>Pukar</h3>
+                            <p>Lead Developer</p>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="image-container">
+                            <img src="${pageContext.request.contextPath}/assets/images/prety.jpg" alt="David Basnet">
+                        </div>
+                        <div class="content">
+                            <h3>Preety</h3>
+                            <p>Marketing Specialist</p>
+                        </div>
+                    </div>
                 </div>
+                <p class="team-quote">AutoRent isn't just about cars — it's about freedom on your terms.</p>
             </div>
         </section>
 
         
-    </main>
+    </main> 
 
     <jsp:include page="components/footer.jsp" />
+
+    <style>
+        /* ... existing styles ... */
+
+        .team-grid {
+            display: flex;
+            flex-wrap: nowrap; /* Prevent wrapping */
+            gap: 20px;
+            overflow-x: auto; /* Add horizontal scroll if necessary */
+            padding-bottom: 15px; /* Add some padding for the scrollbar */
+            justify-content: center; /* Center the flex items */
+        }
+
+        .team-card {
+            flex: 0 0 200px; /* Prevent shrinking/growing, set base width */
+            width: 200px; /* Explicit width */
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center; /* Center content */
+        }
+
+        .team-card .image-container {
+            width: 100%; /* Make image container take full card width */
+            height: 200px; /* Set a fixed height for the image container */
+            overflow: hidden;
+        }
+
+        .team-card .image-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover; /* Scale image to cover container, maintaining aspect ratio */
+        }
+
+        .team-card .content {
+            padding: 15px;
+        }
+
+        .team-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .team-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Adjust grid for smaller screens if needed */
+        @media (max-width: 768px) {
+            .team-grid {
+                 justify-content: flex-start; /* Align to start on small screens */
+            }
+             .team-card {
+                flex: 0 0 180px; /* Slightly smaller cards on mobile */
+                width: 180px;
+            }
+            .team-card .image-container {
+                 height: 180px;
+            }
+        }
+
+        /* Styles for the team quote paragraph */
+        .team-quote {
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            font-style: italic;
+            color: #444;
+            border-left: 4px solid #1877F2;
+            padding-left: 15px;
+            margin: 20px auto; /* Use auto for left/right margin to help center if flex isn't needed */
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 800px; /* Add a max-width for better readability */
+        }
+
+        /* ... rest of existing styles ... */
+    </style>
 
     <script>
         // Mobile Menu Toggle

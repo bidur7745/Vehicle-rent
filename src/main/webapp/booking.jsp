@@ -519,7 +519,7 @@
     <jsp:include page="components/footer.jsp" />
 
    
-    <script>
+    <!-- <script>
         // Mobile menu functionality
         const mobileMenuBtn = document.querySelector('.mobile-menu');
         const navContainer = document.querySelector('.nav-container');
@@ -744,6 +744,176 @@
                 }
             });
         });
-    </script>
+    </script> -->
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const bookingForm = document.getElementById('bookingForm');
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            const pickupTime = document.getElementById('pickupTime');
+            const dropTime = document.getElementById('dropTime');
+            const pickupLocation = document.getElementById('pickupLocation');
+            const dropLocation = document.getElementById('dropLocation');
+        
+            const daysCount = document.getElementById('daysCount');
+            const totalPriceDisplay = document.getElementById('totalPrice');
+            const hiddenTotalPrice = document.getElementById('hiddenTotalPrice');
+        
+            const dailyRate = parseFloat('<%= vehicle.getRentPerDay() %>') || 0;
+            const serviceCharge = 500;
+        
+            // Set today's date and tomorrow for initial inputs
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+        
+            startDate.value = today.toISOString().split('T')[0];
+            endDate.value = tomorrow.toISOString().split('T')[0];
+            startDate.min = today.toISOString().split('T')[0];
+            endDate.min = today.toISOString().split('T')[0];
+        
+            pickupTime.value = "10:00";
+            dropTime.value = "10:00";
+        
+            calculatePrice();
+        
+            function calculatePrice() {
+                const start = new Date(startDate.value);
+                const end = new Date(endDate.value);
+        
+                if (!startDate.value || !endDate.value || isNaN(start) || isNaN(end)) {
+                    return;
+                }
+        
+                if (end < start) {
+                    daysCount.textContent = '0';
+                    totalPriceDisplay.textContent = 'Rs0.00';
+                    hiddenTotalPrice.value = '0';
+                    document.getElementById('endDate-error').textContent = 'Return date cannot be before pickup date';
+                    return;
+                } else {
+                    document.getElementById('endDate-error').textContent = '';
+                }
+        
+                const timeDiff = Math.abs(end - start);
+                const rentalDays = Math.max(1, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
+                const total = (dailyRate + serviceCharge) * rentalDays;
+        
+                daysCount.textContent = rentalDays;
+                totalPriceDisplay.textContent = 'Rs' + total.toFixed(2);
+                hiddenTotalPrice.value = total.toFixed(2);
+            }
+        
+            // Auto-correct end date if before start date
+            startDate.addEventListener('change', () => {
+                if (new Date(endDate.value) < new Date(startDate.value)) {
+                    endDate.value = startDate.value;
+                }
+                endDate.min = startDate.value;
+                calculatePrice();
+            });
+        
+            endDate.addEventListener('change', () => {
+                const start = new Date(startDate.value);
+                const end = new Date(endDate.value);
+                if (end < start) {
+                    alert('Return date cannot be before pickup date. It has been corrected.');
+                    endDate.value = startDate.value;
+                }
+                calculatePrice();
+            });
+        
+            pickupTime.addEventListener('change', calculatePrice);
+            dropTime.addEventListener('change', calculatePrice);
+        
+            // Validate and handle form submission
+            bookingForm.addEventListener('submit', function (e) {
+                let isValid = true;
+        
+                // Clear previous errors
+                const clearError = (input, id) => {
+                    input.classList.remove('error');
+                    document.getElementById(id).textContent = '';
+                };
+        
+                const showError = (input, id, msg) => {
+                    input.classList.add('error');
+                    document.getElementById(id).textContent = msg;
+                    isValid = false;
+                };
+        
+                if (!pickupLocation.value.trim()) {
+                    showError(pickupLocation, 'pickupLocation-error', 'Please enter a pickup location');
+                } else {
+                    clearError(pickupLocation, 'pickupLocation-error');
+                }
+        
+                if (!dropLocation.value.trim()) {
+                    showError(dropLocation, 'dropLocation-error', 'Please enter a drop location');
+                } else {
+                    clearError(dropLocation, 'dropLocation-error');
+                }
+        
+                if (!startDate.value) {
+                    showError(startDate, 'startDate-error', 'Please select a pickup date');
+                } else {
+                    clearError(startDate, 'startDate-error');
+                }
+        
+                if (!endDate.value) {
+                    showError(endDate, 'endDate-error', 'Please select a return date');
+                } else {
+                    clearError(endDate, 'endDate-error');
+                }
+        
+                if (!pickupTime.value) {
+                    showError(pickupTime, 'pickupTime-error', 'Please select a pickup time');
+                } else {
+                    clearError(pickupTime, 'pickupTime-error');
+                }
+        
+                if (!dropTime.value) {
+                    showError(dropTime, 'dropTime-error', 'Please select a return time');
+                } else {
+                    clearError(dropTime, 'dropTime-error');
+                }
+        
+                // Force recalculate and final check
+                calculatePrice();
+        
+                const total = parseFloat(hiddenTotalPrice.value);
+                if (isNaN(total) || total <= 0) {
+                    alert('Invalid total price. Please recheck dates.');
+                    isValid = false;
+                }
+        
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+        </script>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html> 

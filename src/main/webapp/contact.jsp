@@ -229,21 +229,68 @@
     <jsp:include page="/components/footer.jsp" />
 
     <script>
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
             
-            // Show success message
-            document.getElementById('successMessage').style.display = 'block';
+            const form = document.getElementById('contactForm');
+            const formData = new FormData(form);
+            const successMessageDiv = document.getElementById('successMessage');
+            const submitButton = form.querySelector('button[type="submit"]');
             
-            // Reset form
-            document.getElementById('contactForm').reset();
+            // Hide previous messages
+            successMessageDiv.style.display = 'none';
+            successMessageDiv.classList.remove('success-message', 'error-message'); // Clear previous styles
             
-            // Hide success message after 5 seconds
-            setTimeout(function() {
-                document.getElementById('successMessage').style.display = 'none';
-            }, 5000);
+            // Disable button and show loading indicator if desired
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const response = await fetch('${pageContext.request.contextPath}/contact', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Enable button and restore text
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+
+                if (result.success) {
+                    // Show success message
+                    successMessageDiv.textContent = result.message;
+                    successMessageDiv.classList.add('success-message');
+                    successMessageDiv.style.display = 'block';
+
+                    // Reset form
+                    form.reset();
+
+                    // Hide success message after 5 seconds
+                    setTimeout(function() {
+                        successMessageDiv.style.display = 'none';
+                    }, 5000);
+
+                } else {
+                    // Show error message
+                    successMessageDiv.textContent = result.message || 'An error occurred.';
+                    successMessageDiv.classList.add('error-message'); // Add a class for error styling (you might need to define this in CSS)
+                    successMessageDiv.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Error submitting contact form:', error);
+                // Enable button and restore text
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+                
+                // Show generic error message
+                successMessageDiv.textContent = 'An error occurred while sending your message. Please try again.';
+                successMessageDiv.classList.add('error-message'); // Add a class for error styling
+                successMessageDiv.style.display = 'block';
+            }
             
-            return false;
+            return false; // Prevent actual form submission
         }
     </script>
 </body>

@@ -23,6 +23,7 @@ public class AuthFilter implements Filter {
         "/about.jsp",
         "/vehicles.jsp",
         "/contact.jsp",
+        "/contact",
         "/LoginServlet",
         "/RegisterServlet",
         "/logout"

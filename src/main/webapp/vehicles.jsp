@@ -149,93 +149,114 @@
             }
         });
         
-        // Filter functionality (moved out of DOMContentLoaded)
-        const categorySelect = document.getElementById('category');
-        const priceSelect = document.getElementById('price');
-        const applyFiltersBtn = document.getElementById('applyFilters');
-        const resetFiltersBtn = document.getElementById('resetFilters');
-        const vehicleCards = document.querySelectorAll('.vehicle-card');
-        
-        function applyFilters() {
-            const selectedCategory = categorySelect.value.toLowerCase();
-            const selectedPrice = priceSelect.value;
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const categorySelect = document.getElementById('category');
+            const priceSelect = document.getElementById('price');
+            const applyFiltersBtn = document.getElementById('applyFilters');
+            const resetFiltersBtn = document.getElementById('resetFilters');
+            const vehicleCards = document.querySelectorAll('.vehicle-card');
             
-            let visibleCount = 0;
+            function applyFilters() {
+                const selectedCategory = categorySelect.value.toLowerCase();
+                const selectedPrice = priceSelect.value;
+                
+                let visibleCount = 0;
+                
+                vehicleCards.forEach(card => {
+                    let showCard = true;
+                    
+                    // Filter by category
+                    if (selectedCategory) {
+                        const vehicleType = card.querySelector('.vehicle-features span:nth-child(2)').textContent.trim().toLowerCase();
+                        const vehicleName = card.querySelector('h3').textContent.trim().toLowerCase();
+                        
+                        // Check if either type or name contains the selected category
+                        if (!vehicleType.includes(selectedCategory) && !vehicleName.includes(selectedCategory)) {
+                            showCard = false;
+                        }
+                    }
+                    
+                    // Filter by price
+                    if (selectedPrice && showCard) {
+                        const priceText = card.querySelector('.price').textContent.trim();
+                        // Extract only the numeric value from the price text
+                        const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+                        
+                        if (!isNaN(price)) {
+                            switch(selectedPrice) {
+                                case '0-5000':
+                                    if (price > 5000) showCard = false;
+                                    break;
+                                case '5001-20000':
+                                    if (price < 5001 || price > 20000) showCard = false;
+                                    break;
+                                case '20001-40000':
+                                    if (price < 20001 || price > 40000) showCard = false;
+                                    break;
+                                case '40001+':
+                                    if (price < 40001) showCard = false;
+                                    break;
+                            }
+                        } else {
+                            console.error('Could not parse price:', priceText);
+                        }
+                    }
+                    
+                    // Show/hide the card
+                    card.style.display = showCard ? '' : 'none';
+                    if (showCard) visibleCount++;
+                });
+                
+                // Handle no results message
+                let noVehiclesMsg = document.querySelector('.no-vehicles');
+                
+                if (visibleCount === 0) {
+                    if (!noVehiclesMsg) {
+                        noVehiclesMsg = document.createElement('div');
+                        noVehiclesMsg.className = 'no-vehicles';
+                        noVehiclesMsg.innerHTML = '<p>No vehicles match your selected filters.</p>';
+                        document.querySelector('.vehicle-cards').appendChild(noVehiclesMsg);
+                    }
+                } else if (noVehiclesMsg) {
+                    noVehiclesMsg.remove();
+                }
+
+                // Log filter results for debugging
+                console.log('Filter Results:', {
+                    selectedCategory,
+                    selectedPrice,
+                    visibleCount,
+                    totalCards: vehicleCards.length
+                });
+            }
             
-            vehicleCards.forEach(card => {
-                let showCard = true;
-                
-                // Filter by category
-                if (selectedCategory) {
-                    const vehicleType = card.querySelector('.vehicle-features span:nth-child(2)').textContent.toLowerCase();
-                    const vehicleName = card.querySelector('h3').textContent.toLowerCase();
-                    
-                    if (!vehicleType.includes(selectedCategory) && !vehicleName.includes(selectedCategory)) {
-                        showCard = false;
-                    }
+            function resetFilters() {
+                categorySelect.value = '';
+                priceSelect.value = '';
+                applyFilters();
+            }
+            
+            // Attach filter events
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            resetFiltersBtn.addEventListener('click', resetFilters);
+            
+            // Also apply filters when pressing Enter in select elements
+            categorySelect.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
                 }
-                
-                // Filter by price
-                if (selectedPrice && showCard) {
-                    const priceText = card.querySelector('.price').textContent;
-                    const price = parseInt(priceText.replace(/[^0-9]/g, ''));
-                    
-                    switch(selectedPrice) {
-                        case '0-5000':
-                            if (price > 5000) showCard = false;
-                            break;
-                        case '5001-20000':
-                            if (price < 5001 || price > 20000) showCard = false;
-                            break;
-                        case '20001-40000':
-                            if (price < 20001 || price > 40000) showCard = false;
-                            break;
-                        case '40001+':
-                            if (price < 40001) showCard = false;
-                            break;
-                    }
-                }
-                
-                card.style.display = showCard ? '' : 'none';
-                if (showCard) visibleCount++;
             });
             
-            // Handle no results message
-            let noVehiclesMsg = document.querySelector('.no-vehicles');
-            
-            if (visibleCount === 0) {
-                if (!noVehiclesMsg) {
-                    noVehiclesMsg = document.createElement('div');
-                    noVehiclesMsg.className = 'no-vehicles';
-                    noVehiclesMsg.innerHTML = '<p>No vehicles match your selected filters.</p>';
-                    document.querySelector('.vehicle-cards').appendChild(noVehiclesMsg);
+            priceSelect.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
                 }
-            } else if (noVehiclesMsg) {
-                noVehiclesMsg.remove();
-            }
-        }
-        
-        function resetFilters() {
-            categorySelect.value = '';
-            priceSelect.value = '';
-            applyFilters();
-        }
-        
-        // Attach filter events
-        applyFiltersBtn.addEventListener('click', applyFilters);
-        resetFiltersBtn.addEventListener('click', resetFilters);
-        
-        // Also apply filters when pressing Enter in select elements
-        categorySelect.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                applyFilters();
-            }
-        });
-        
-        priceSelect.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                applyFilters();
-            }
+            });
+
+            // Apply filters when select values change
+            categorySelect.addEventListener('change', applyFilters);
+            priceSelect.addEventListener('change', applyFilters);
         });
     </script>
 
@@ -355,6 +376,21 @@
             .filter-actions {
                 justify-content: center;
             }
+        }
+
+        .no-vehicles {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .no-vehicles p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin: 0;
         }
     </style>
 </body>

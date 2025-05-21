@@ -13,6 +13,8 @@ public class    Booking {
     private double totalPrice;
     private String status;
     private String createdAt;
+    private String userName;  // Added for display purposes
+    private String vehicleName;  // Added for display purposes
 
     // Constructors,
 
@@ -50,6 +52,21 @@ public class    Booking {
 
     // Getters & Setters
 
+    public String getVehicleName() {
+        return vehicleName;
+    }
+
+    public void setVehicleName(String vehicleName) {
+        this.vehicleName = vehicleName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public int getBookingId() {
         return bookingId;

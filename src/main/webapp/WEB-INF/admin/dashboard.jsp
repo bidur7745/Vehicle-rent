@@ -93,42 +93,91 @@
             color: #111827;
         }
 
-        /* Table Styles */
-        .table-container {
-            overflow-x: auto;
+        /* Booking Cards Grid */
+        .booking-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .booking-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s ease-in-out;
         }
 
-        th {
-            background-color: #f9fafb;
-            padding: 0.75rem 1.5rem;
-            text-align: left;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #6b7280;
-            text-transform: uppercase;
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        td {
-            padding: 1rem 1.5rem;
-            color: #111827;
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .booking-id {
             font-size: 0.875rem;
-            border-bottom: 1px solid #e5e7eb;
+            color: #6b7280;
         }
 
-        /* Status Badges */
-        .status-badge {
+        .booking-status {
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .booking-details {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .booking-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .booking-detail i {
+            width: 1.25rem;
+            color: #6b7280;
+        }
+
+        .booking-detail span {
+            color: #111827;
+            font-size: 0.875rem;
+        }
+
+        .booking-actions {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .view-link {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-link:hover {
+            color: #4338ca;
+            text-decoration: underline;
+        }
+
+        /* Status Badges */
         .status-confirmed {
             background-color: #dcfce7;
             color: #166534;
@@ -144,18 +193,6 @@
             color: #991b1b;
         }
 
-        /* Links */
-        .view-link {
-            color: #4f46e5;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .view-link:hover {
-            color: #4338ca;
-            text-decoration: underline;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .content-wrapper {
@@ -163,6 +200,10 @@
             }
 
             .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-cards {
                 grid-template-columns: 1fr;
             }
         }
@@ -211,7 +252,7 @@
                     <i class="fas fa-dollar-sign yellow"></i>
                 </div>
                 <div class="label">Total Revenue</div>
-                <div class="value">$${totalRevenue}</div>
+                <div class="value">Rs${totalRevenue}</div>
             </div>
         </div>
 
@@ -220,45 +261,42 @@
             <div class="card-header">
                 <h2>Recent Bookings</h2>
             </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>User</th>
-                            <th>Vehicle</th>
-                            <th>Start Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach items="${recentBookings}" var="booking">
-                            <tr>
-                                <td>#${booking.bookingId}</td>
-                                <td>${booking.userName}</td>
-                                <td>${booking.vehicleName}</td>
-                                <td>${booking.startDateTime}</td>
-                                <td>
-                                    <span class="status-badge ${booking.status == 'CONFIRMED' ? 'status-confirmed' :
-                                                               booking.status == 'PENDING' ? 'status-pending' :
-                                                               'status-cancelled'}">
-                                        <i class="fas ${booking.status == 'CONFIRMED' ? 'fa-check-circle' :
-                                                      booking.status == 'PENDING' ? 'fa-clock' :
-                                                      'fa-times-circle'}"></i>
-                                        ${booking.status}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="${pageContext.request.contextPath}/admin/bookings/view?id=${booking.bookingId}"
-                                       class="view-link">
-                                        <i class="fas fa-eye"></i> View Details
-                                    </a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+            <div class="booking-cards">
+                <c:forEach items="${recentBookings}" var="booking">
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <span class="booking-id">#${booking.bookingId}</span>
+                            <span class="booking-status ${booking.status == 'CONFIRMED' ? 'status-confirmed' :
+                                                       booking.status == 'PENDING' ? 'status-pending' :
+                                                       'status-cancelled'}">
+                                <i class="fas ${booking.status == 'CONFIRMED' ? 'fa-check-circle' :
+                                              booking.status == 'PENDING' ? 'fa-clock' :
+                                              'fa-times-circle'}"></i>
+                                ${booking.status}
+                            </span>
+                        </div>
+                        <div class="booking-details">
+                            <div class="booking-detail">
+                                <i class="fas fa-user"></i>
+                                <span>${booking.userName}</span>
+                            </div>
+                            <div class="booking-detail">
+                                <i class="fas fa-car"></i>
+                                <span>${booking.vehicleName}</span>
+                            </div>
+                            <div class="booking-detail">
+                                <i class="fas fa-calendar"></i>
+                                <span>${booking.startDateTime}</span>
+                            </div>
+                        </div>
+                        <div class="booking-actions">
+                            <a href="${pageContext.request.contextPath}/admin/bookings/view?id=${booking.bookingId}"
+                               class="view-link">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </c:forEach>
             </div>
         </div>
     </main>

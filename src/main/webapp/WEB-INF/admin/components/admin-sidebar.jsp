@@ -96,6 +96,13 @@
             <i class="fas fa-users"></i>
             Users
         </a>
+
+        <a href="${pageContext.request.contextPath}/admin/contact-messages"
+           class="nav-link ${pageContext.request.servletPath.contains('/contact-messages') ? 'active' : ''}">
+            <i class="fas fa-envelope"></i>
+            Contact Messages
+        </a>
+
         <div class="nav-divider"></div>
         <a href="${pageContext.request.contextPath}/logout" class="nav-link danger">
             <i class="fas fa-sign-out-alt"></i>

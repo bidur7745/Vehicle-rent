@@ -33,7 +33,9 @@
                             <option value="">All Categories</option>
                             <option value="sedan">Sedan</option>
                             <option value="suv">SUV</option>
-                            <option value="luxury">Luxury</option>
+                            <option value="superbike">Superbike</option>                            <option value="luxury">Luxury</option>
+
+
                         </select>
                     </div>
                     <div class="filter-group">

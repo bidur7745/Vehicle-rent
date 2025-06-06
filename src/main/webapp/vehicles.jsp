@@ -132,32 +132,38 @@
 
 
     <script>
-        // Mobile Menu Toggle
+        // Mobile menu toggle (only if the button actually exists)
         const mobileMenuBtn = document.querySelector('.mobile-menu');
         const navContainer = document.querySelector('.nav-container');
         
-        mobileMenuBtn.addEventListener('click', () => {
-            navContainer.classList.toggle('active');
-            mobileMenuBtn.innerHTML = navContainer.classList.contains('active') 
-                ? '<i class="fas fa-times"></i>' 
-                : '<i class="fas fa-bars"></i>';
-        });
+        if (mobileMenuBtn && navContainer) {
+            mobileMenuBtn.addEventListener('click', () => {
+                navContainer.classList.toggle('active');
+                mobileMenuBtn.innerHTML = navContainer.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!navContainer.contains(e.target) && navContainer.classList.contains('active')) {
-                navContainer.classList.remove('active');
-                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-            }
-        });
+            document.addEventListener('click', (e) => {
+                if (navContainer.classList.contains('active') && !navContainer.contains(e.target)) {
+                    navContainer.classList.remove('active');
+                    mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+        }
         
-        // Filter functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality using an IIFE
+        (function() {
             const categorySelect = document.getElementById('category');
             const priceSelect = document.getElementById('price');
             const applyFiltersBtn = document.getElementById('applyFilters');
             const resetFiltersBtn = document.getElementById('resetFilters');
             const vehicleCards = document.querySelectorAll('.vehicle-card');
+            
+            if (!categorySelect || !priceSelect || !applyFiltersBtn || !resetFiltersBtn || !vehicleCards.length) {
+                console.error('Required elements for filtering are missing.');
+                return;
+            }
             
             function applyFilters() {
                 const selectedCategory = categorySelect.value.toLowerCase();
@@ -259,7 +265,7 @@
             // Apply filters when select values change
             categorySelect.addEventListener('change', applyFilters);
             priceSelect.addEventListener('change', applyFilters);
-        });
+        })();
     </script>
 
     <style>

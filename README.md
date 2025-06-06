@@ -73,7 +73,7 @@ Before starting, make sure you have the following installed:
 ## 🔄 Clone the Repository
 
 ```bash
-git clone https://github.com/Anmolpoudyal/vehicle_Commerce-.git
+git clone https://github.com/bidur7745/vehicle-rent.git
 cd vehicle_Commerce-
 ```
 ## 🧰 Database Setup
